@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quem é o impostor?</title>
+<style>
+:root{color-scheme:dark;--ink:#f6f0df;--muted:#c4bcae;--bg:#171510;--panel:#211e17;--edge:#514836;--lime:#e7f66d;--orange:#ff855a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Space Mono",monospace}
+button,input{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:default;opacity:.48}
+button:focus-visible,input:focus-visible{outline:2px solid var(--orange);outline-offset:4px}
+[hidden]{display:none!important}
+main{max-width:1050px;padding:0 28px 52px;margin:auto}
+header{border-bottom:1px solid var(--edge);padding:28px 0;color:var(--lime);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase}
+.hero{min-height:300px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:30px 0}
+h1,h2,p{margin:0}
+h1{font:900 clamp(3.4rem,10vw,7.6rem)/.84 "Archivo Black","Arial Black",sans-serif;letter-spacing:-.085em}
+h1 em{color:var(--lime);font-style:normal}
+.hero p{margin-top:20px;color:var(--muted)}
+.deck{position:relative;width:140px;height:188px;flex:none;margin-right:32px;transform:rotate(10deg)}
+.deck:before,.deck:after,.deck span{position:absolute;inset:0;border:1px solid var(--lime);border-radius:13px;background:var(--bg);content:""}
+.deck:before{transform:translate(-25px,4px) rotate(-24deg)}
+.deck:after{transform:translate(-12px,0) rotate(-12deg)}
+.deck span{z-index:1;background:repeating-linear-gradient(45deg,#edfa80,#edfa80 3px,var(--lime) 3px,var(--lime) 7px);color:var(--bg);display:grid;place-items:center;font:bold 110px/1 "Arial Black",sans-serif}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{border:1px solid var(--edge);background:var(--panel);padding:24px;min-width:0}
+.panel h2{font:bold 1.55rem/1.2 "Arial Black",sans-serif;letter-spacing:-.04em;margin-bottom:16px}
+.panel h2 small{font:inherit;font-size:.65em;color:var(--orange);margin-right:10px}
+label{display:block;margin-bottom:8px}
+.field,.stepper,.chips,.launch{display:flex;gap:8px;align-items:center}
+.field input{flex:1;min-width:0}
+input{width:100%;padding:11px 12px;border:1px solid var(--edge);border-radius:0;background:var(--bg);color:var(--ink)}
+button{border:1px solid var(--edge);background:var(--panel);color:var(--ink);padding:9px 12px}
+button:hover:not(:disabled){border-color:var(--lime)}
+.primary{background:var(--lime);border-color:var(--lime);color:#171510;font-weight:bold;padding:12px 18px}
+.names{list-style:none;padding:0;margin:12px 0;max-height:240px;overflow:auto}
+.names li{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--edge);padding:5px 0;overflow-wrap:anywhere}
+.names button{padding:2px 9px}
+.meta{font-size:.82rem;color:var(--muted)}
+.chips{flex-wrap:wrap;margin-top:12px}
+.chips button{font-size:.82rem;padding:6px 9px}
+.chips button[aria-pressed=true]{border-color:var(--lime);color:var(--lime)}
+.options{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px;padding-top:14px;border-top:1px dashed var(--edge)}
+.stepper output{min-width:2ch;text-align:center;color:var(--lime)}
+.launch{margin-top:17px;justify-content:space-between;flex-wrap:wrap}
+#message{color:var(--orange)}
+.round{max-width:600px;margin:42px auto 0;text-align:center}
+.round h2{font:900 clamp(2rem,7vw,4rem)/1 "Arial Black",sans-serif;overflow-wrap:anywhere;margin:12px 0}
+.round .primary,.round .secondary{margin-top:20px}
+.card{width:min(100%,360px);min-height:220px;display:grid;place-items:center;margin:22px auto 0;padding:18px;border:1px solid var(--lime);border-radius:10px;overflow-wrap:anywhere;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.card:not(.revealed){background:repeating-linear-gradient(45deg,transparent,transparent 5px,#e7f66d19 5px,#e7f66d19 6px)}
+.card-mark{display:block;color:var(--lime);font:bold 76px/1 sans-serif;margin-bottom:10px}
+.card strong{display:block;font:bold clamp(1.55rem,6vw,2.45rem)/1.15 "Arial Black",sans-serif;color:var(--lime);margin:10px 0}
+.card.spy{border-color:var(--orange)}
+.card.spy strong{color:var(--orange)}
+.revealed #face{animation:flip .16s ease-out}
+@keyframes flip{from{transform:perspective(550px) rotateY(45deg)}to{transform:perspective(550px) rotateY(0)}}
+@media(prefers-reduced-motion:reduce){.revealed #face{animation:none}}
+@media(max-width:670px){main{padding:0 16px 32px}.grid{grid-template-columns:1fr}.hero{min-height:240px;gap:10px}.hero p{font-size:.85rem}.deck{width:58px;height:78px;margin-right:9px}.deck span{font-size:46px}.deck:before{transform:translate(-12px,2px) rotate(-24deg)}.deck:after{transform:translate(-6px,0) rotate(-12deg)}.panel{padding:17px}}
+@media(max-width:355px){.deck{display:none}}
+</style>
+</head>
+<body>
+<main>
+<header>Jogo de blefe · Passe o celular</header>
+<section id="setup">
+  <div class="hero">
+    <div><h1>Quem é o<br><em>impostor?</em></h1><p>Uma palavra secreta. Alguém só tem uma pista.</p></div>
+    <div class="deck" aria-hidden="true"><span>?</span></div>
+  </div>
+  <div class="grid" id="settings">
+    <section class="panel">
+      <h2><small>01</small> Jogadores</h2>
+      <form id="add">
+        <label for="name">Nome do jogador</label>
+        <div class="field"><input id="name" maxlength="60" placeholder="Ex.: Nome do jogaor" autocomplete="off" required><button class="primary">Adicionar</button></div>
+      </form>
+      <ul class="names" id="names" aria-label="Jogadores cadastrados"></ul>
+      <p class="meta" id="count" aria-live="polite"></p>
+    </section>
+    <section class="panel">
+      <h2><small>02</small> Rodada</h2>
+      <label for="theme">Tema da palavra</label>
+      <input id="theme" maxlength="80" placeholder="Ex.: Futebol ou Astronomia" autocomplete="off" value="Futebol" aria-describedby="theme-note">
+      <div class="chips" id="themes" aria-label="Temas sugeridos">
+        <button>Futebol</button><button>Cinema</button><button>Comida</button><button>Animais</button><button>Games</button><button>Objetos do dia a dia</button>
+      </div>
+      <div class="options">
+        <span id="spy-label">Impostores</span>
+        <div class="stepper" role="group" aria-labelledby="spy-label"><button id="minus" aria-label="Remover um impostor">−</button><output id="quantity">1</output><button id="plus" aria-label="Adicionar um impostor">+</button></div>
+      </div>
+    </section>
+  </div>
+  <div class="launch"><div><p class="meta" id="theme-note">Os temas sugeridos funcionam offline. Outros temas usam a Wikipédia.</p><p id="message" role="status"></p></div><button class="primary" id="start">Sortear rodada →</button></div>
+</section>
+<section class="panel round" id="turn" hidden>
+  <p class="meta" id="progress"></p><h2 id="current" tabindex="-1"></h2>
+  <p>Pegue o celular e veja sua carta em segredo.</p>
+  <button type="button" class="card" id="hold" aria-label="Segure para ver sua carta">
+    <span id="cover"><span class="card-mark" aria-hidden="true">?</span>Segure para ver</span>
+    <span id="face" hidden><span id="role"></span><strong id="secret"></strong><span id="hint"></span></span>
+  </button>
+  <button type="button" class="primary" id="next" disabled>Próximo jogador →</button>
+</section>
+<section class="panel round" id="discussion" hidden>
+  <h2 tabindex="-1" id="discussion-title">Hora de blefar.</h2>
+  <p>Cada pessoa dá uma pista sobre a palavra. Depois conversem e votem em quem parece ser impostor.</p>
+  <button class="primary" id="finish">Mostrar resultado</button>
+</section>
+<section class="panel round" id="result" hidden>
+  <p class="meta">A palavra era</p><h2 id="answer" tabindex="-1"></h2><p id="spies"></p>
+  <button class="primary" id="again">Nova rodada</button>
+  <button class="secondary" id="edit">Voltar à configuração</button>
+</section>
+<script>
+"use strict";
+const local = {
+  futebol: [
+    ["Neymar","Espinho"],
+    ["Pelé","Coroa"],
+    ["Marta","Palco"],
+    ["Chuteira","Atrito"],
+    ["Trave","Limite"],
+    ["Escanteio","Ângulo"],
+    ["Cartão amarelo","Aviso"],
+    ["Maracanã","Multidão"],
+    ["Bola de futebol","Costura"],
+    ["Luva de goleiro","Palma"],
+    ["Impedimento","Linha"],
+    ["Cristiano Ronaldo","Impulso"],
+    ["Lionel Messi","Esquerda"],
+    ["Ronaldo Fenômeno","Arrancada"],
+    ["Ronaldinho Gaúcho","Sorriso"],
+    ["Vinícius Júnior","Aceleração"],
+    ["Zico","Precisão"],
+    ["Romário","Atalho"],
+    ["Garrincha","Curva"],
+    ["Rivaldo","Equilíbrio"],
+    ["Cafu","Fôlego"],
+    ["Roberto Carlos","Arco"],
+    ["Kaká","Passada"],
+    ["Andrés Iniesta","Silêncio"],
+    ["Luka Modrić","Ritmo"],
+    ["Kylian Mbappé","Velocidade"],
+    ["Erling Haaland","Alcance"],
+    ["Camisa de time","Identidade"],
+    ["Caneleira","Impacto"],
+    ["Meião","Altura"],
+    ["Grama sintética","Textura"],
+    ["Rede do gol","Malha"],
+    ["Pênalti","Pressão"],
+    ["Drible","Desvio"],
+    ["Contra-ataque","Janela"],
+    ["Prorrogação","Resistência"],
+    ["Tiro de meta","Recomeço"],
+    ["Arremesso lateral","Margem"],
+    ["Barreira","Alinhamento"],
+    ["Cartão vermelho","Limite"],
+    ["Copa do Mundo","Intervalo"],
+    ["Libertadores","Viagem"],
+    ["Brasileirão","Calendário"],
+    ["VAR","Revisão"],
+    ["Bandeirinha","Borda"],
+    ["Apito","Sopro"],
+  ],
+  cinema: [
+    ["Titanic","Travessia"],
+    ["Matrix","Escolha"],
+    ["Shrek","Visita"],
+    ["Jurassic Park","Amostra"],
+    ["Interestelar","Distância"],
+    ["Oscar","Expectativa"],
+    ["Pipoca","Estalo"],
+    ["Claque","Batida"],
+    ["O Rei Leão","Legado"],
+    ["Procurando Nemo","Correnteza"],
+    ["Monstros S.A.","Turno"],
+    ["WALL-E","Rotina"],
+    ["Toy Story","Mudança"],
+    ["Up – Altas Aventuras","Promessa"],
+    ["Ratatouille","Memória"],
+    ["Divertida Mente","Mudança"],
+    ["Coco","Retrato"],
+    ["Encanto","Peso"],
+    ["Moana","Horizonte"],
+    ["Frozen","Isolamento"],
+    ["Harry Potter","Correspondência"],
+    ["O Senhor dos Anéis","Caminhada"],
+    ["De Volta para o Futuro","Atraso"],
+    ["Indiana Jones","Mapa"],
+    ["E.T. – O Extraterrestre","Contato"],
+    ["Os Caça-Fantasmas","Chamado"],
+    ["Gladiador","Honra"],
+    ["Rocky","Treino"],
+    ["O Poderoso Chefão","Família"],
+    ["Forrest Gump","Espera"],
+    ["O Show de Truman","Limite"],
+    ["O Náufrago","Paciência"],
+    ["O Diabo Veste Prada","Prazo"],
+    ["A Origem","Camadas"],
+    ["Duna","Disputa"],
+    ["Avatar","Conexão"],
+    ["Cidade de Deus","Escolha"],
+    ["Central do Brasil","Carta"],
+    ["Auto da Compadecida","Acordo"],
+    ["Tropa de Elite","Hierarquia"],
+    ["Bacurau","Visita"],
+    ["Ainda Estou Aqui","Ausência"],
+    ["Trilha sonora","Clima"],
+    ["Dublagem","Sincronia"],
+    ["Efeitos especiais","Ilusão"],
+    ["Trailer","Amostra"],
+  ],
+  comida: [
+    ["Brigadeiro","Festa"],
+    ["Lasanha","Camadas"],
+    ["Tapioca","Peneira"],
+    ["Sushi","Precisão"],
+    ["Cuscuz","Vapor"],
+    ["Açaí","Frio"],
+    ["Pizza","Encontro"],
+    ["Pão de queijo","Intervalo"],
+    ["Feijoada","Sábado"],
+    ["Farofa","Crocância"],
+    ["Baião de dois","Mistura"],
+    ["Vatapá","Consistência"],
+    ["Arroz de cuxá","Acidez"],
+    ["Moqueca","Calor"],
+    ["Acarajé","Rua"],
+    ["Pastel","Feira"],
+    ["Coxinha","Pausa"],
+    ["Empada","Migalha"],
+    ["Esfiha","Dobra"],
+    ["Quibe","Tempero"],
+    ["Hambúrguer","Montagem"],
+    ["Cachorro-quente","Fila"],
+    ["Omelete","Virada"],
+    ["Panqueca","Volta"],
+    ["Risoto","Paciência"],
+    ["Strogonoff","Cobertura"],
+    ["Purê de batata","Maciez"],
+    ["Salada de frutas","Cores"],
+    ["Canjica","Tradição"],
+    ["Pamonha","Embrulho"],
+    ["Cocada","Textura"],
+    ["Paçoca","Pressão"],
+    ["Pudim","Vitrine"],
+    ["Mousse","Leveza"],
+    ["Bolo de cenoura","Cobertura"],
+    ["Churros","Passeio"],
+    ["Sorvete","Temperatura"],
+    ["Brownie","Densidade"],
+    ["Rapadura","Bloco"],
+    ["Goiabada","Dupla"],
+    ["Banana frita","Dourado"],
+    ["Macarrão","Fio"],
+    ["Nhoque","Formato"],
+    ["Churrasco","Brasa"],
+    ["Caldo verde","Noite"],
+    ["Pão francês","Manhã"],
+  ],
+  animais: [
+    ["Polvo","Tinta"],
+    ["Girafa","Alcance"],
+    ["Tartaruga","Paciência"],
+    ["Morcego","Eco"],
+    ["Camaleão","Disfarce"],
+    ["Pinguim","Casaca"],
+    ["Ornitorrinco","Mistura"],
+    ["Abelha","Rotina"],
+    ["Capivara","Margem"],
+    ["Onça-pintada","Sombra"],
+    ["Lobo-guará","Horizonte"],
+    ["Tamanduá","Fresta"],
+    ["Bicho-preguiça","Intervalo"],
+    ["Tatu","Abrigo"],
+    ["Ouriço","Distância"],
+    ["Jacaré","Imobilidade"],
+    ["Crocodilo","Espera"],
+    ["Iguana","Calor"],
+    ["Sucuri","Silêncio"],
+    ["Cascavel","Alerta"],
+    ["Sapo","Mudança"],
+    ["Salamandra","Umidade"],
+    ["Tubarão","Percurso"],
+    ["Golfinho","Grupo"],
+    ["Baleia","Viagem"],
+    ["Arraia","Fundo"],
+    ["Cavalo-marinho","Corrente"],
+    ["Lula","Jato"],
+    ["Caranguejo","Desvio"],
+    ["Lagosta","Rocha"],
+    ["Ostra","Filtro"],
+    ["Água-viva","Transparência"],
+    ["Coruja","Vigília"],
+    ["Águia","Altura"],
+    ["Arara","Volume"],
+    ["Tucano","Contraste"],
+    ["Beija-flor","Pausa"],
+    ["Flamingo","Equilíbrio"],
+    ["Avestruz","Passada"],
+    ["Pavão","Desfile"],
+    ["Elefante","Vibração"],
+    ["Hipopótamo","Superfície"],
+    ["Rinoceronte","Território"],
+    ["Gorila","Postura"],
+    ["Canguru","Impulso"],
+    ["Coala","Descanso"],
+  ],
+  games: [
+    ["Minecraft","Camadas"],
+    ["Tetris","Encaixe"],
+    ["Mario","Atalho"],
+    ["Sonic","Impulso"],
+    ["Pac-Man","Curva"],
+    ["Among Us","Circulação"],
+    ["Stardew Valley","Estação"],
+    ["Portal","Promessa"],
+    ["Counter-Strike","Economia"],
+    ["Valorant","Coordenação"],
+    ["Fortnite","Queda"],
+    ["Roblox","Criação"],
+    ["Free Fire","Encolhimento"],
+    ["League of Legends","Rota"],
+    ["Dota 2","Visão"],
+    ["Rocket League","Balanço"],
+    ["EA Sports FC","Escalação"],
+    ["The Sims","Rotina"],
+    ["GTA V","Trânsito"],
+    ["Red Dead Redemption 2","Fronteira"],
+    ["Elden Ring","Paciência"],
+    ["Dark Souls","Insistência"],
+    ["Hollow Knight","Eco"],
+    ["Celeste","Altura"],
+    ["Terraria","Escavação"],
+    ["Cuphead","Repetição"],
+    ["Hades","Retorno"],
+    ["Dead Cells","Ciclo"],
+    ["Undertale","Escolha"],
+    ["Fall Guys","Equilíbrio"],
+    ["It Takes Two","Dupla"],
+    ["Overcooked","Prazo"],
+    ["Resident Evil","Inventário"],
+    ["Silent Hill","Visibilidade"],
+    ["God of War","Herança"],
+    ["The Last of Us","Travessia"],
+    ["Uncharted","Rastro"],
+    ["Tomb Raider","Escalada"],
+    ["Life Is Strange","Consequência"],
+    ["Detroit: Become Human","Decisão"],
+    ["Street Fighter","Distância"],
+    ["Mortal Kombat","Sequência"],
+    ["Tekken","Postura"],
+    ["Pokémon","Troca"],
+    ["Animal Crossing","Vizinhança"],
+    ["Super Smash Bros.","Margem"],
+  ],
+  objetos: [
+    ["Guarda-chuva","Previsão"],
+    ["Escova de dentes","Rotina"],
+    ["Espelho","Ângulo"],
+    ["Controle remoto","Alcance"],
+    ["Chave","Encaixe"],
+    ["Carteira","Bolso"],
+    ["Mochila","Costas"],
+    ["Óculos","Ajuste"],
+    ["Garrafa térmica","Intervalo"],
+    ["Relógio de pulso","Compromisso"],
+    ["Fone de ouvido","Isolamento"],
+    ["Carregador","Espera"],
+    ["Extensão elétrica","Distância"],
+    ["Lanterna","Visibilidade"],
+    ["Pilhas","Reserva"],
+    ["Abajur","Clima"],
+    ["Ventilador","Circulação"],
+    ["Cortina","Filtro"],
+    ["Varal","Sol"],
+    ["Prendedor de roupa","Pressão"],
+    ["Cabide","Forma"],
+    ["Ferro de passar","Vinco"],
+    ["Cesto de roupa","Acúmulo"],
+    ["Saboneteira","Drenagem"],
+    ["Toalha","Absorção"],
+    ["Pente","Alinhamento"],
+    ["Secador de cabelo","Fluxo"],
+    ["Cortador de unhas","Precisão"],
+    ["Rodo","Direção"],
+    ["Vassoura","Canto"],
+    ["Pá de lixo","Recolhimento"],
+    ["Balde","Volume"],
+    ["Esponja","Atrito"],
+    ["Pano de prato","Manuseio"],
+    ["Luva de limpeza","Contato"],
+    ["Tapete","Textura"],
+    ["Capacho","Entrada"],
+    ["Travesseiro","Altura"],
+    ["Lençol","Camada"],
+    ["Cobertor","Peso"],
+    ["Colchão","Apoio"],
+    ["Caixa de ferramentas","Organização"],
+    ["Fita métrica","Margem"],
+    ["Chave de fenda","Giro"],
+    ["Alicate","Aperto"],
+    ["Martelo","Impulso"],
+    ["Parafuso","Fixação"],
+    ["Tesoura","Simetria"],
+    ["Cola bastão","Área"],
+    ["Grampeador","Junção"],
+    ["Clipes","Agrupamento"],
+    ["Elástico","Tensão"],
+    ["Caneta","Traço"],
+    ["Lápis","Pressão"],
+    ["Borracha","Revisão"],
+    ["Marca-texto","Trecho"],
+    ["Caderno","Sequência"],
+    ["Régua","Alinhamento"],
+    ["Envelope","Destino"],
+    ["Carimbo","Confirmação"],
+    ["Calculadora","Conferência"],
+    ["Caneca","Pausa"],
+    ["Copo","Margem"],
+    ["Prato","Porção"],
+    ["Garfo","Apoio"],
+    ["Colher","Medida"],
+    ["Faca de cozinha","Firmeza"],
+    ["Tábua de corte","Superfície"],
+    ["Escorredor de louça","Secagem"],
+    ["Peneira","Separação"],
+    ["Ralador","Textura"],
+    ["Concha","Porção"],
+    ["Pegador de massa","Controle"],
+    ["Abridor de latas","Borda"],
+    ["Saca-rolhas","Resistência"],
+    ["Panela de pressão","Tempo"],
+    ["Frigideira","Virada"],
+    ["Chaleira","Espera"],
+    ["Liquidificador","Redemoinho"],
+    ["Torradeira","Ponto"],
+    ["Pote plástico","Vedação"],
+    ["Forma de gelo","Divisão"],
+    ["Funil","Passagem"],
+    ["Garrafa reutilizável","Trajeto"],
+    ["Sacola retornável","Compra"],
+    ["Caixa de fósforos","Atrito"],
+    ["Vela","Duração"],
+    ["Isqueiro","Faísca"],
+    ["Porta-retrato","Memória"],
+    ["Despertador","Pontualidade"],
+    ["Cadeado","Segurança"],
+    ["Campainha","Chegada"],
+    ["Cadeira","Postura"],
+    ["Banquinho","Altura"],
+    ["Cabideiro","Chegada"],
+    ["Estante","Ordem"],
+    ["Gaveta","Acesso"],
+    ["Lixeira","Descarte"],
+    ["Porta-copos","Umidade"],
+    ["Guardanapo","Acidente"],
+    ["Filtro de café","Passagem"],
+    ["Coador de chá","Infusão"],
+  ],
+};
+const aliases = new Map([
+  ["jogos","games"],["filmes","cinema"],["culinaria","comida"],["animal","animais"],
+  ["objeto","objetos"],["objetos do dia a dia","objetos"],["objetos cotidianos","objetos"],
+]);
+const queries = {
+  futebol: ["futebol brasileiro futebolista", "equipamentos futebol chuteira", "futebol regra escanteio", "estádio futebol brasileiro"],
+  cinema: ["filme cinema animação", "cinema filme ficção científica", "cinema prêmios"],
+  comida: ["comida prato culinária brasileira", "sobremesa culinária", "prato culinária japonesa"],
+  animais: ["mamífero animal", "ave animal", "animal marinho molusco"],
+  games: ["jogo eletrônico plataforma", "jogo eletrônico quebra-cabeça", "jogo eletrônico aventura"],
+};
+const clues = [
+  [/futebolista|jogador|atacante|zagueiro|goleiro/i,"Torcida"],
+  [/estádio|arena/i,"Arquibancada"],[/chuteira|calçado/i,"Tração"],
+  [/árbitro|arbitragem|regra/i,"Apito"],[/trenador|treinador|técnico de futebol/i,"Prancheta"],
+  [/sobremesa|doce|bolo/i,"Fim da refeição"],[/culinária|ingrediente|prato|receita/i,"Mesa"],
+  [/mamífero|roedor/i,"Filhote"],[/ave|pássaro/i,"Ninho"],[/peixe|molusco|marinho/i,"Correnteza"],
+  [/filme|cinema|metragem/i,"Sessão"],[/jogo eletrônico|videojogo|videogame/i,"Controle"],
+  [/planeta|estrela|galáxia|astronom/i,"Observatório"],[/instrumento musical|música/i,"Compasso"],
+  [/cidade|município|capital/i,"Mapa"],[/personagem|protagonista/i,"História"],
+  [/equipamento|ferramenta|dispositivo/i,"Manuseio"],[/conceito|teoria|fenômeno/i,"Explicação"]
+];
+const $ = id => document.getElementById(id);
+const normalize = text => text.normalize("NFD").replace(/\p{Diacritic}/gu,"").toLowerCase().trim();
+const keyOf = text => aliases.get(normalize(text)) ?? normalize(text);
+const has = (table, key) => Object.hasOwn(table, key);
+const players = [];
+const historyKey = "quem-e-o-impostor:palavras-usadas";
+const usedTerms = new Set();
+const searchCache = new Map();
+let previousSpies = new Set();
+let impostors = 1;
+let busy = false;
+let round;
+let activePointer = null;
+let activeKey = null;
+let cardSeen = false;
+
+function randomBelow(size) {
+  const buffer = new Uint32Array(1);
+  const limit = 2 ** 32 - (2 ** 32 % size);
+  do { crypto.getRandomValues(buffer); } while (buffer[0] >= limit);
+  return buffer[0] % size;
+}
+
+function sample(indexes, amount) {
+  for (let index = 0; index < amount; index++) {
+    const pick = index + randomBelow(indexes.length - index);
+    [indexes[index], indexes[pick]] = [indexes[pick], indexes[index]];
+  }
+  return indexes.slice(0, amount);
+}
+
+function drawSpies(roster, amount, previous = previousSpies) {
+  const eligible = [];
+  const repeats = [];
+  roster.forEach((name, index) => {
+    (previous.has(normalize(name)) ? repeats : eligible).push(index);
+  });
+  const freshCount = Math.min(amount, eligible.length);
+  return new Set([...sample(eligible, freshCount), ...sample(repeats, amount - freshCount)]);
+}
+
+const wordsOf = value => normalize(value).match(/[a-z0-9]+/g) ?? [];
+const wordKey = value => wordsOf(value).join("");
+const stopWords = new Set(["a","o","as","os","de","da","do","das","dos","em","no","na","e","the","of","to","for","in"]);
+
+function safeClue(title, hint) {
+  if (!hint || wordKey(title) === wordKey(hint)) return false;
+  const answer = wordsOf(title).filter(word => !stopWords.has(word));
+  const clue = wordsOf(hint).filter(word => !stopWords.has(word));
+  return clue.length > 0 && clue.every(word => answer.every(part =>
+    word !== part && !(part.length >= 4 && word.length >= 4 && part.slice(0,4) === word.slice(0,4))
+  ));
+}
+
+function refreshHistory() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(historyKey) ?? "[]");
+    if (Array.isArray(saved)) {
+      for (const key of saved) if (typeof key === "string") usedTerms.add(key);
+    }
+  } catch {
+    // O histórico em memória continua disponível se o navegador bloquear o armazenamento.
+  }
+}
+
+function rememberWord(word) {
+  usedTerms.add(wordKey(word));
+  try {
+    localStorage.setItem(historyKey, JSON.stringify([...usedTerms]));
+  } catch {
+    // A partida segue com o histórico em memória.
+  }
+}
+
+async function searchTheme(query, offset, signal) {
+  const params = new URLSearchParams({
+    action:"query", list:"search", format:"json", origin:"*",
+    srsearch:query, srnamespace:"0", srlimit:"30", srprop:"snippet", sroffset:String(offset),
+  });
+  const response = await fetch("https://pt.wikipedia.org/w/api.php?" + params, {signal, credentials:"omit"});
+  if (!response.ok) throw new Error("Busca indisponível");
+  const data = await response.json();
+  if (!Array.isArray(data.query?.search)) throw new Error("Sem resultados");
+  return {rows: data.query.search, nextOffset: data.continue?.sroffset ?? null};
+}
+
+async function onlineCards(query, theme, key) {
+  if (!searchCache.has(query)) searchCache.set(query, {cards:new Map(), offset:0});
+  const entry = searchCache.get(query);
+  const themeId = wordKey(theme);
+  const keyId = wordKey(key);
+  const available = () => [...entry.cards]
+    .filter(([id]) => id !== themeId && id !== keyId && !usedTerms.has(id))
+    .map(([,card]) => card);
+  const cached = available();
+  if (cached.length || entry.offset === null) return cached;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 4500);
+  try {
+    for (let page = 0; page < 3 && entry.offset !== null; page++) {
+      const {rows,nextOffset} = await searchTheme(query,entry.offset,controller.signal);
+      entry.offset = nextOffset;
+      for (const row of rows) {
+        const title = row.title?.replace(/\s*\([^()]*\)\s*$/, "").trim();
+        if (!title || title.length > 56 || /^(lista|anexo|categoria|história|cronologia)\b/i.test(title) || /desambiguação/i.test(row.title)) continue;
+        const id = wordKey(title);
+        if (!id || usedTerms.has(id) || entry.cards.has(id)) continue;
+        const snippet = String(row.snippet ?? "").replace(/<[^>]*>/g," ");
+        const hint = clues.find(([pattern, clue]) => pattern.test(snippet) && safeClue(title, clue))?.[1];
+        if (safeClue(title,hint)) entry.cards.set(id,[title,hint]);
+      }
+      if (available().length) break;
+    }
+  } catch {
+    // Uma falha de rede mantém as cartas já encontradas e permite tentar de novo.
+  } finally {
+    clearTimeout(timeout);
+  }
+  return available();
+}
+
+async function pickWord(theme) {
+  refreshHistory();
+  const key = keyOf(theme);
+  const builtIn = has(local,key) ? local[key] : [];
+  let candidates = builtIn.filter(([word,hint]) => !usedTerms.has(wordKey(word)) && safeClue(word,hint));
+  if (key !== "objetos" && (!candidates.length || randomBelow(4) === 0)) {
+    const categories = has(queries,key) ? queries[key] : [theme];
+    const selectedQueries = candidates.length
+      ? [categories[randomBelow(categories.length)]]
+      : categories;
+    const results = await Promise.all(selectedQueries.map(query => onlineCards(query,theme,key)));
+    const online = new Map(results.flat().map(card => [wordKey(card[0]),card]));
+    refreshHistory();
+    if (online.size) {
+      const curated = new Map(builtIn.map(card => [wordKey(card[0]),card]));
+      const fresh = [...online].map(([id,card]) => curated.get(id) ?? card)
+        .filter(([word,hint]) => !usedTerms.has(wordKey(word)) && safeClue(word,hint));
+      if (fresh.length) candidates = fresh;
+    }
+    candidates = candidates.filter(([word]) => !usedTerms.has(wordKey(word)));
+  }
+  if (!candidates.length) {
+    throw new Error(key === "objetos"
+      ? "Todas as cartas de Objetos já foram usadas. Escolha outro tema."
+      : "Nenhuma palavra inédita com pista foi encontrada. Tente buscar de novo ou escolha outro tema.");
+  }
+  const [word,hint] = candidates[randomBelow(candidates.length)];
+  rememberWord(word);
+  return {word,hint};
+}
+
+function renderPlayers() {
+  $("names").replaceChildren(...players.map((name,index) => {
+    const item = document.createElement("li");
+    const label = document.createElement("span");
+    label.textContent = name;
+    const remove = document.createElement("button");
+    remove.textContent = "×";
+    remove.setAttribute("aria-label", "Remover " + name);
+    remove.disabled = busy;
+    remove.onclick = () => {
+      players.splice(index,1);
+      renderPlayers();
+      $("name").focus();
+    };
+    item.append(label,remove);
+    return item;
+  }));
+  $("count").textContent = players.length + (players.length === 1 ? " jogador" : " jogadores") + " · mínimo de 3";
+  const maximum = Math.max(1,players.length - 1);
+  impostors = Math.min(impostors,maximum);
+  $("quantity").value = impostors;
+  $("minus").disabled = busy || impostors <= 1;
+  $("plus").disabled = busy || impostors >= maximum;
+}
+
+function show(id) {
+  for (const page of ["setup","turn","discussion","result"]) $(page).hidden = page !== id;
+}
+
+function showTurn() {
+  hideCard();
+  cardSeen = false;
+  $("next").disabled = true;
+  $("next").textContent = round.index + 1 === round.players.length ? "Iniciar discussão →" : "Próximo jogador →";
+  show("turn");
+  $("progress").textContent = "Carta " + (round.index + 1) + " de " + round.players.length;
+  $("current").textContent = round.players[round.index];
+  $("current").focus();
+}
+
+function syncThemes() {
+  for (const button of $("themes").querySelectorAll("button")) {
+    button.setAttribute("aria-pressed",String(keyOf(button.textContent) === keyOf($("theme").value)));
+  }
+}
+
+async function startRound() {
+  if (busy) return;
+  const theme = $("theme").value.trim();
+  if (players.length < 3 || !theme) {
+    $("message").textContent = players.length < 3 ? "Adicione pelo menos três jogadores." : "Digite ou escolha um tema.";
+    show("setup");
+    $(players.length < 3 ? "name" : "theme").focus();
+    return;
+  }
+  busy = true;
+  $("message").textContent = "";
+  $("start").disabled = $("again").disabled = $("edit").disabled = true;
+  $("start").textContent = $("again").textContent = "Buscando palavra…";
+  $("settings").inert = true;
+  const roster = [...players];
+  renderPlayers();
+  try {
+    const word = await pickWord(theme);
+    const roles = drawSpies(roster,impostors);
+    round = {...word, players:roster, roles, index:0};
+    previousSpies = new Set([...roles].map(index => normalize(roster[index])));
+    showTurn();
+  } catch (error) {
+    show("setup");
+    $("message").textContent = error.message;
+  } finally {
+    busy = false;
+    $("start").disabled = $("again").disabled = $("edit").disabled = false;
+    $("start").textContent = "Sortear rodada →";
+    $("again").textContent = "Nova rodada";
+    $("settings").inert = false;
+    renderPlayers();
+  }
+}
+
+$("add").onsubmit = event => {
+  event.preventDefault();
+  if (busy) return;
+  const name = $("name").value.trim();
+  if (!name) return;
+  if (players.some(player => normalize(player) === normalize(name))) {
+    $("message").textContent = "Esse nome já está na lista. Use um apelido para diferenciar.";
+  } else {
+    players.push(name);
+    $("name").value = "";
+    $("message").textContent = "";
+    renderPlayers();
+  }
+  $("name").focus();
+};
+$("minus").onclick = () => { impostors--; renderPlayers(); };
+$("plus").onclick = () => { impostors++; renderPlayers(); };
+$("themes").onclick = event => {
+  if (event.target.tagName !== "BUTTON") return;
+  $("theme").value = event.target.textContent;
+  $("message").textContent = "";
+  syncThemes();
+};
+$("theme").oninput = syncThemes;
+$("start").onclick = $("again").onclick = startRound;
+$("edit").onclick = () => { show("setup"); $("theme").focus(); };
+
+function hideCard() {
+  const pointer = activePointer;
+  activePointer = activeKey = null;
+  const card = $("hold");
+  if (pointer !== null && card.hasPointerCapture(pointer)) card.releasePointerCapture(pointer);
+  $("cover").hidden = false;
+  $("face").hidden = true;
+  $("role").textContent = $("secret").textContent = $("hint").textContent = "";
+  card.className = "card";
+  $("next").disabled = !cardSeen;
+}
+
+function revealCard() {
+  const isSpy = round.roles.has(round.index);
+  $("role").textContent = isSpy ? "Seu papel" : "Palavra secreta";
+  $("secret").textContent = isSpy ? "Você é o impostor" : round.word;
+  $("hint").textContent = isSpy ? "Sua pista: " + round.hint : "";
+  $("hold").classList.add("revealed");
+  $("hold").classList.toggle("spy",isSpy);
+  $("cover").hidden = $("next").disabled = true;
+  $("face").hidden = false;
+  cardSeen = true;
+}
+
+const card = $("hold");
+card.addEventListener("pointerdown", event => {
+  if (event.button !== 0 || activePointer !== null || activeKey !== null) return;
+  card.setPointerCapture(event.pointerId);
+  activePointer = event.pointerId;
+  revealCard();
+});
+for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
+  card.addEventListener(type, event => {
+    if (activePointer === event.pointerId) hideCard();
+  });
+}
+card.addEventListener("contextmenu", event => event.preventDefault());
+card.addEventListener("keydown", event => {
+  if (event.key !== " " && event.key !== "Enter") return;
+  event.preventDefault();
+  if (event.repeat || activePointer !== null || activeKey !== null) return;
+  activeKey = event.key;
+  revealCard();
+});
+card.addEventListener("keyup", event => {
+  if (event.key !== activeKey) return;
+  event.preventDefault();
+  hideCard();
+});
+card.addEventListener("blur", hideCard);
+window.addEventListener("blur", hideCard);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) hideCard();
+});
+$("next").onclick = () => {
+  if (!cardSeen || !$("face").hidden) return;
+  hideCard();
+  round.index++;
+  if (round.index < round.players.length) showTurn();
+  else {
+    show("discussion");
+    $("discussion-title").focus();
+  }
+};
+$("finish").onclick = () => {
+  $("answer").textContent = round.word;
+  const names = round.players.filter((_,index) => round.roles.has(index));
+  $("spies").textContent = (names.length === 1 ? "Impostor: " : "Impostores: ") + names.join(", ");
+  show("result");
+  $("answer").focus();
+};
+renderPlayers();
+syncThemes();
+</script>
+</body>
+</html>
