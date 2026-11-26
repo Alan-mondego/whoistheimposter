@@ -4,463 +4,945 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quem é o impostor?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:dark;--ink:#f6f0df;--muted:#c4bcae;--bg:#171510;--panel:#211e17;--edge:#514836;--lime:#e7f66d;--orange:#ff855a}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Space Mono",monospace}
-button,input{font:inherit}
-button{cursor:pointer}
-button:disabled{cursor:default;opacity:.48}
-button:focus-visible,input:focus-visible{outline:2px solid var(--orange);outline-offset:4px}
-[hidden]{display:none!important}
-main{max-width:1050px;padding:0 28px 52px;margin:auto}
-header{border-bottom:1px solid var(--edge);padding:28px 0;color:var(--lime);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase}
-.hero{min-height:300px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:30px 0}
-h1,h2,p{margin:0}
-h1{font:900 clamp(3.4rem,10vw,7.6rem)/.84 "Archivo Black","Arial Black",sans-serif;letter-spacing:-.085em}
-h1 em{color:var(--lime);font-style:normal}
-.hero p{margin-top:20px;color:var(--muted)}
-.deck{position:relative;width:140px;height:188px;flex:none;margin-right:32px;transform:rotate(10deg)}
-.deck:before,.deck:after,.deck span{position:absolute;inset:0;border:1px solid var(--lime);border-radius:13px;background:var(--bg);content:""}
-.deck:before{transform:translate(-25px,4px) rotate(-24deg)}
-.deck:after{transform:translate(-12px,0) rotate(-12deg)}
-.deck span{z-index:1;background:repeating-linear-gradient(45deg,#edfa80,#edfa80 3px,var(--lime) 3px,var(--lime) 7px);color:var(--bg);display:grid;place-items:center;font:bold 110px/1 "Arial Black",sans-serif}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.panel{border:1px solid var(--edge);background:var(--panel);padding:24px;min-width:0}
-.panel h2{font:bold 1.55rem/1.2 "Arial Black",sans-serif;letter-spacing:-.04em;margin-bottom:16px}
-.panel h2 small{font:inherit;font-size:.65em;color:var(--orange);margin-right:10px}
-label{display:block;margin-bottom:8px}
-.field,.stepper,.chips,.launch{display:flex;gap:8px;align-items:center}
-.field input{flex:1;min-width:0}
-input{width:100%;padding:11px 12px;border:1px solid var(--edge);border-radius:0;background:var(--bg);color:var(--ink)}
-button{border:1px solid var(--edge);background:var(--panel);color:var(--ink);padding:9px 12px}
-button:hover:not(:disabled){border-color:var(--lime)}
-.primary{background:var(--lime);border-color:var(--lime);color:#171510;font-weight:bold;padding:12px 18px}
-.names{list-style:none;padding:0;margin:12px 0;max-height:240px;overflow:auto}
-.names li{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--edge);padding:5px 0;overflow-wrap:anywhere}
-.names button{padding:2px 9px}
-.meta{font-size:.82rem;color:var(--muted)}
-.chips{flex-wrap:wrap;margin-top:12px}
-.chips button{font-size:.82rem;padding:6px 9px}
-.chips button[aria-pressed=true]{border-color:var(--lime);color:var(--lime)}
-.options{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px;padding-top:14px;border-top:1px dashed var(--edge)}
-.stepper output{min-width:2ch;text-align:center;color:var(--lime)}
-.launch{margin-top:17px;justify-content:space-between;flex-wrap:wrap}
-#message{color:var(--orange)}
-.round{max-width:600px;margin:42px auto 0;text-align:center}
-.round h2{font:900 clamp(2rem,7vw,4rem)/1 "Arial Black",sans-serif;overflow-wrap:anywhere;margin:12px 0}
-.round .primary,.round .secondary{margin-top:20px}
-.card{width:min(100%,360px);min-height:220px;display:grid;place-items:center;margin:22px auto 0;padding:18px;border:1px solid var(--lime);border-radius:10px;overflow-wrap:anywhere;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-.card:not(.revealed){background:repeating-linear-gradient(45deg,transparent,transparent 5px,#e7f66d19 5px,#e7f66d19 6px)}
-.card-mark{display:block;color:var(--lime);font:bold 76px/1 sans-serif;margin-bottom:10px}
-.card strong{display:block;font:bold clamp(1.55rem,6vw,2.45rem)/1.15 "Arial Black",sans-serif;color:var(--lime);margin:10px 0}
-.card.spy{border-color:var(--orange)}
-.card.spy strong{color:var(--orange)}
-.revealed #face{animation:flip .16s ease-out}
-@keyframes flip{from{transform:perspective(550px) rotateY(45deg)}to{transform:perspective(550px) rotateY(0)}}
-@media(prefers-reduced-motion:reduce){.revealed #face{animation:none}}
-@media(max-width:670px){main{padding:0 16px 32px}.grid{grid-template-columns:1fr}.hero{min-height:240px;gap:10px}.hero p{font-size:.85rem}.deck{width:58px;height:78px;margin-right:9px}.deck span{font-size:46px}.deck:before{transform:translate(-12px,2px) rotate(-24deg)}.deck:after{transform:translate(-6px,0) rotate(-12deg)}.panel{padding:17px}}
-@media(max-width:355px){.deck{display:none}}
+:root {
+  color-scheme: light;
+  --paper: #f4f1ea;
+  --board: #fcfbf9;
+  --ink: #1e1e1e;
+  --muted: #5c574f;
+  --rule: #bbb5a9;
+  --terracotta: #d95d39;
+  --rust: #963d26;
+  --olive: #4a6b53;
+  --olive-dark: #31523c;
+  --olive-wash: #e7eee6;
+  --rust-wash: #f7e5dc;
+  --petrol: #2b5b6c;
+  --display: "Space Grotesk", "Trebuchet MS", sans-serif;
+  --mono: "JetBrains Mono", Consolas, monospace;
+  --outline: 2px solid #1e1e1e;
+  --shadow: 4px 4px 0px #1e1e1e;
+  --ease: .15s ease-out;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1rem/1.5 var(--display);
+}
+
+main {
+  width: min(100% - 56px, 1080px);
+  margin-inline: auto;
+  padding-bottom: 52px;
+}
+
+h1, h2, p { margin: 0; }
+
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 20px;
+  border-bottom: 1px solid var(--ink);
+  font: 600 .7rem/1.35 var(--mono);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.masthead strong {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  font-weight: 600;
+}
+
+.masthead strong::before {
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--ink);
+  background: var(--terracotta);
+  transform: rotate(45deg);
+  content: "";
+}
+
+.masthead span { color: var(--muted); }
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(216px, 31%);
+  align-items: center;
+  gap: 24px;
+  padding: 37px 0 40px;
+}
+
+.hero h1 {
+  font-size: clamp(4.1rem, 9.1vw, 8.25rem);
+  font-weight: 700;
+  line-height: .84;
+  letter-spacing: -.09em;
+}
+
+.hero h1 em {
+  color: var(--olive-dark);
+  font-style: normal;
+}
+
+.hero p {
+  margin-top: 19px;
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+
+.deck {
+  position: relative;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: clamp(112px, 12vw, 158px);
+  aspect-ratio: 0.76;
+  margin-inline: 18px;
+  isolation: isolate;
+}
+
+.deck::before, .deck::after, .deck-face {
+  position: absolute;
+  inset: 0;
+  border: var(--outline);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+}
+
+.deck::before, .deck::after { content: ""; }
+.deck::before {
+  background: var(--petrol);
+  transform: translate(-23%, 2%) rotate(-21deg);
+}
+.deck::after {
+  background: var(--terracotta);
+  transform: translate(19%, 5%) rotate(17deg);
+}
+
+.deck-face {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background: var(--board);
+  color: var(--ink);
+  transform: rotate(-5deg);
+  font-size: clamp(3.5rem, 7.8vw, 7rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.deck-face::before, .deck-face::after {
+  position: absolute;
+  width: 8%;
+  aspect-ratio: 1;
+  border: 1px solid var(--ink);
+  background: var(--olive);
+  transform: rotate(45deg);
+  content: "";
+}
+.deck-face::before { top: 10%; left: 13%; }
+.deck-face::after { bottom: 10%; right: 13%; }
+
+.board {
+  border: var(--outline);
+  border-radius: 4px;
+  background: var(--board);
+  box-shadow: var(--shadow);
+}
+
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.panel { min-width: 0; padding: 24px 28px; }
+.grid > .panel + .panel { border-left: 1px solid var(--rule); }
+
+.panel h2 {
+  margin-bottom: 15px;
+  font-size: 1.69rem;
+  line-height: 1.05;
+  letter-spacing: -.05em;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: .91rem;
+  font-weight: 600;
+}
+
+button, input { font: inherit; }
+button {
+  --button-shadow: var(--shadow);
+  --pressed-shadow: 4px 2px 0px var(--ink);
+  min-height: 44px;
+  padding: 8px 14px;
+  border: var(--outline);
+  border-radius: 4px;
+  background: var(--board);
+  color: var(--ink);
+  box-shadow: var(--button-shadow);
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: transform var(--ease), box-shadow var(--ease), background-color var(--ease), color var(--ease);
+}
+
+@media (hover: hover) {
+  button:where(:not(.card)):hover:not(:disabled) { background: var(--olive-wash); }
+  .primary:hover:not(:disabled) { background: var(--olive-dark); }
+  .card:not(.revealed):hover:not(:disabled) { background: var(--olive-dark); }
+}
+
+button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: var(--pressed-shadow);
+}
+
+button:disabled {
+  border-color: var(--rule);
+  background: var(--paper);
+  color: var(--muted);
+  box-shadow: none;
+  cursor: default;
+}
+
+button:focus-visible, input:focus-visible, .round h2:focus-visible {
+  outline: 2px solid var(--petrol);
+  outline-offset: 4px;
+}
+
+.primary {
+  padding-inline: 18px;
+  background: var(--olive);
+  color: var(--board);
+}
+
+input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 11px;
+  border: var(--outline);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+}
+input::placeholder { color: var(--muted); }
+
+.field { display: flex; align-items: center; gap: 10px; }
+.field input { flex: 1; min-width: 0; }
+.field .primary { padding-inline: 14px; }
+
+.names {
+  max-height: 220px;
+  margin: 14px 0 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.names:empty { margin: 0; }
+.names li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 51px;
+  padding: 3px 4px 3px 0;
+  border-top: 1px solid var(--rule);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.names button {
+  --button-shadow: 2px 3px 0px var(--ink);
+  --pressed-shadow: 2px 1px 0px var(--ink);
+  flex: 0 0 44px;
+  padding: 0;
+  color: var(--rust);
+  font-size: 1.35rem;
+}
+
+.meta, .stepper output {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.meta { color: var(--muted); font-size: .74rem; }
+#count { margin-top: 13px; }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 9px;
+  margin-top: 12px;
+}
+
+.chips button {
+  --button-shadow: 2px 3px 0px var(--ink);
+  --pressed-shadow: 2px 1px 0px var(--ink);
+  min-height: 38px;
+  padding: 5px 10px;
+  font-size: .82rem;
+}
+
+.chips button[aria-pressed="true"] {
+  background: var(--olive-wash);
+  color: var(--olive-dark);
+}
+
+.options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 17px;
+  padding-top: 13px;
+  border-top: 1px solid var(--rule);
+  font-weight: 600;
+}
+
+.stepper { display: flex; align-items: center; gap: 8px; }
+.stepper button {
+  display: grid;
+  width: 44px;
+  place-items: center;
+  padding: 0;
+  font: 600 1.13rem/1 var(--mono);
+}
+
+.stepper output {
+  min-width: 3ch;
+  color: var(--olive-dark);
+  text-align: center;
+}
+
+.launch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: 17px 28px 21px;
+  border-top: 1px solid var(--rule);
+}
+
+.launch .primary { flex-shrink: 0; }
+#message { margin-top: 5px; color: var(--rust); font-weight: 600; }
+#message:empty { margin-top: 0; }
+
+.round {
+  width: min(100%, 650px);
+  margin: 38px auto 0;
+  padding: 25px 28px 28px;
+  text-align: center;
+}
+
+.round-heading {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.round-heading .meta, #role {
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.round h2 {
+  margin: 7px 0 8px;
+  font-size: clamp(2.25rem, 7vw, 4.15rem);
+  line-height: .99;
+  letter-spacing: -.07em;
+  overflow-wrap: anywhere;
+}
+
+.round-heading > :last-child { margin-bottom: 0; }
+.round-heading > p:not(.meta), .round-copy { color: var(--muted); }
+
+.round-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 23px;
+}
+
+.card {
+  width: min(100%, 365px);
+  min-height: 238px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  margin: 23px auto 0;
+  padding: 24px;
+  border-radius: 4px;
+  background: var(--olive);
+  color: var(--board);
+  overflow-wrap: anywhere;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.card:not(.revealed)::before {
+  position: absolute;
+  inset: 9px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  pointer-events: none;
+  content: "";
+}
+
+.card-mark {
+  display: block;
+  margin-bottom: 11px;
+  font-size: 5.6rem;
+  font-weight: 700;
+  line-height: .85;
+}
+
+#cover {
+  font: 600 .78rem/1.3 var(--mono);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+#cover .card-mark { font-family: var(--display); }
+
+.card.revealed { background: var(--olive-wash); color: var(--ink); }
+.card.spy { background: var(--rust-wash); }
+.revealed #face { animation: reveal .15s ease-out; }
+
+#face { width: min(100%, 290px); }
+#role { font: 600 .7rem/1.2 var(--mono); }
+
+.card strong {
+  display: block;
+  margin: 9px 0;
+  color: var(--olive-dark);
+  font-size: clamp(1.55rem, 6vw, 2.42rem);
+  line-height: 1.03;
+  letter-spacing: -.045em;
+}
+
+.card.spy strong { color: var(--rust); }
+#hint, #partners { display: block; }
+#partners {
+  margin-top: 13px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+  color: var(--rust);
+  font-size: .82rem;
+  font-weight: 500;
+}
+#hint:empty, #partners:empty { display: none; }
+
+#starter {
+  margin: 17px 0 7px;
+  color: var(--olive-dark);
+  font-size: 1.13rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.round-copy { max-width: 42ch; margin-inline: auto; }
+#spies { margin-top: 16px; overflow-wrap: anywhere; }
+
+@keyframes reveal {
+  from { transform: translateY(3px); opacity: .65; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 700px) {
+  main { width: calc(100% - 36px); padding-bottom: 35px; }
+  .masthead { padding-block: 16px; }
+  .hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 13px;
+    padding-block: 31px;
+  }
+  .hero h1 { font-size: clamp(3.25rem, 11.8vw, 5.15rem); }
+  .hero p { margin-top: 14px; font-size: .91rem; }
+  .deck { width: clamp(66px, 15vw, 110px); margin-inline: 12px; }
+  .deck-face { font-size: clamp(2.75rem, 9vw, 4.4rem); }
+  .grid { grid-template-columns: 1fr; }
+  .grid > .panel + .panel { border-top: 1px solid var(--rule); border-left: 0; }
+  .panel, .round { padding: 19px 17px; }
+  .launch { padding: 17px 17px 19px; }
+  .chips button { min-height: 44px; }
+}
+
+@media (max-width: 475px) {
+  .masthead { font-size: .64rem; }
+  .deck { align-self: start; margin-top: 8px; }
+  .hero p { max-width: 25ch; }
+  .panel h2 { font-size: 1.49rem; }
+  .launch { align-items: stretch; flex-direction: column; }
+  .round { margin-top: 24px; }
+  .round-actions { display: grid; grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 355px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .deck { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button { transition: none; }
+  .revealed #face { animation: none; }
+}
 </style>
 </head>
 <body>
 <main>
-<header>Jogo de blefe · Passe o celular</header>
+<header class="masthead">
+  <strong>Jogo de blefe</strong>
+  <span>Passe o celular</span>
+</header>
 <section id="setup">
   <div class="hero">
-    <div><h1>Quem é o<br><em>impostor?</em></h1><p>Uma palavra secreta. Alguém só tem uma pista.</p></div>
-    <div class="deck" aria-hidden="true"><span>?</span></div>
+    <div>
+      <h1>Quem é o<br><em>impostor?</em></h1>
+      <p>Uma palavra secreta. Alguém só tem uma pista.</p>
+    </div>
+    <div class="deck" aria-hidden="true"><span class="deck-face">?</span></div>
   </div>
-  <div class="grid" id="settings">
-    <section class="panel">
-      <h2><small>01</small> Jogadores</h2>
-      <form id="add">
-        <label for="name">Nome do jogador</label>
-        <div class="field"><input id="name" maxlength="60" placeholder="Ex.: Nome do jogaor" autocomplete="off" required><button class="primary">Adicionar</button></div>
-      </form>
-      <ul class="names" id="names" aria-label="Jogadores cadastrados"></ul>
-      <p class="meta" id="count" aria-live="polite"></p>
-    </section>
-    <section class="panel">
-      <h2><small>02</small> Rodada</h2>
-      <label for="theme">Tema da palavra</label>
-      <input id="theme" maxlength="80" placeholder="Ex.: Futebol ou Astronomia" autocomplete="off" value="Futebol" aria-describedby="theme-note">
-      <div class="chips" id="themes" aria-label="Temas sugeridos">
-        <button>Futebol</button><button>Cinema</button><button>Comida</button><button>Animais</button><button>Games</button><button>Objetos do dia a dia</button>
+  <div class="board">
+    <div class="grid" id="settings">
+      <section class="panel">
+        <h2>Jogadores</h2>
+        <form id="add">
+          <label for="name">Nome do jogador</label>
+          <div class="field">
+            <input id="name" maxlength="60" placeholder="Digite seu name" autocomplete="off" required>
+            <button class="primary">Adicionar</button>
+          </div>
+        </form>
+        <ul class="names" id="names" aria-label="Jogadores cadastrados"></ul>
+        <p class="meta" id="count" aria-live="polite"></p>
+      </section>
+      <section class="panel">
+        <h2>Rodada</h2>
+        <label for="theme">Tema da palavra</label>
+        <input id="theme" maxlength="80" placeholder="Ex.: Futebol ou Astronomia" autocomplete="off" value="Futebol" aria-describedby="theme-note">
+        <div class="chips" id="themes" aria-label="Temas sugeridos">
+          <button>Futebol</button><button>Cinema</button><button>Comida</button>
+          <button>Animais</button><button>Games</button><button>Objetos do dia a dia</button>
+        </div>
+        <div class="options">
+          <span id="spy-label">Impostores</span>
+          <div class="stepper" role="group" aria-labelledby="spy-label">
+            <button id="minus" aria-label="Remover um impostor">−</button>
+            <output id="quantity">1</output>
+            <button id="plus" aria-label="Adicionar um impostor">+</button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="launch">
+      <div>
+        <p class="meta" id="theme-note">Os temas sugeridos funcionam offline. Outros temas usam a Wikipédia.</p>
+        <p id="message" role="status"></p>
       </div>
-      <div class="options">
-        <span id="spy-label">Impostores</span>
-        <div class="stepper" role="group" aria-labelledby="spy-label"><button id="minus" aria-label="Remover um impostor">−</button><output id="quantity">1</output><button id="plus" aria-label="Adicionar um impostor">+</button></div>
-      </div>
-    </section>
+      <button class="primary" id="start">Sortear rodada →</button>
+    </div>
   </div>
-  <div class="launch"><div><p class="meta" id="theme-note">Os temas sugeridos funcionam offline. Outros temas usam a Wikipédia.</p><p id="message" role="status"></p></div><button class="primary" id="start">Sortear rodada →</button></div>
 </section>
-<section class="panel round" id="turn" hidden>
-  <p class="meta" id="progress"></p><h2 id="current" tabindex="-1"></h2>
-  <p>Pegue o celular e veja sua carta em segredo.</p>
+<section class="board round" id="turn" hidden>
+  <div class="round-heading">
+    <p class="meta" id="progress"></p>
+    <h2 id="current" tabindex="-1"></h2>
+    <p>Pegue o celular e veja sua carta em segredo.</p>
+  </div>
   <button type="button" class="card" id="hold" aria-label="Segure para ver sua carta">
     <span id="cover"><span class="card-mark" aria-hidden="true">?</span>Segure para ver</span>
-    <span id="face" hidden><span id="role"></span><strong id="secret"></strong><span id="hint"></span></span>
+    <span id="face" hidden>
+      <span id="role"></span><strong id="secret"></strong><span id="hint"></span><span id="partners"></span>
+    </span>
   </button>
-  <button type="button" class="primary" id="next" disabled>Próximo jogador →</button>
+  <div class="round-actions">
+    <button type="button" class="primary" id="next" disabled>Próximo jogador →</button>
+    <button type="button" class="secondary" id="menu-turn">Menu principal</button>
+  </div>
 </section>
-<section class="panel round" id="discussion" hidden>
-  <h2 tabindex="-1" id="discussion-title">Hora de blefar.</h2>
-  <p>Cada pessoa dá uma pista sobre a palavra. Depois conversem e votem em quem parece ser impostor.</p>
-  <button class="primary" id="finish">Mostrar resultado</button>
+<section class="board round" id="discussion" hidden>
+  <div class="round-heading">
+    <h2 tabindex="-1" id="discussion-title">Hora de blefar.</h2>
+  </div>
+  <p id="starter"></p>
+  <p class="round-copy">Cada pessoa dá uma pista sobre a palavra. Depois conversem e votem em quem parece ser impostor.</p>
+  <div class="round-actions">
+    <button class="primary" id="finish">Mostrar resultado</button>
+    <button type="button" class="secondary" id="menu-discussion">Menu principal</button>
+  </div>
 </section>
-<section class="panel round" id="result" hidden>
-  <p class="meta">A palavra era</p><h2 id="answer" tabindex="-1"></h2><p id="spies"></p>
-  <button class="primary" id="again">Nova rodada</button>
-  <button class="secondary" id="edit">Voltar à configuração</button>
+<section class="board round" id="result" hidden>
+  <div class="round-heading">
+    <p class="meta">A palavra era</p>
+    <h2 id="answer" tabindex="-1"></h2>
+  </div>
+  <p id="spies"></p>
+  <div class="round-actions">
+    <button class="primary" id="again">Nova rodada</button>
+    <button class="secondary" id="edit">Voltar à configuração</button>
+  </div>
 </section>
 <script>
 "use strict";
 const local = {
   futebol: [
-    ["Neymar","Espinho"],
-    ["Pelé","Coroa"],
-    ["Marta","Palco"],
-    ["Chuteira","Atrito"],
-    ["Trave","Limite"],
-    ["Escanteio","Ângulo"],
-    ["Cartão amarelo","Aviso"],
-    ["Maracanã","Multidão"],
-    ["Bola de futebol","Costura"],
-    ["Luva de goleiro","Palma"],
-    ["Impedimento","Linha"],
-    ["Cristiano Ronaldo","Impulso"],
-    ["Lionel Messi","Esquerda"],
-    ["Ronaldo Fenômeno","Arrancada"],
-    ["Ronaldinho Gaúcho","Sorriso"],
-    ["Vinícius Júnior","Aceleração"],
-    ["Zico","Precisão"],
-    ["Romário","Atalho"],
-    ["Garrincha","Curva"],
-    ["Rivaldo","Equilíbrio"],
-    ["Cafu","Fôlego"],
-    ["Roberto Carlos","Arco"],
-    ["Kaká","Passada"],
-    ["Andrés Iniesta","Silêncio"],
-    ["Luka Modrić","Ritmo"],
-    ["Kylian Mbappé","Velocidade"],
-    ["Erling Haaland","Alcance"],
-    ["Camisa de time","Identidade"],
-    ["Caneleira","Impacto"],
-    ["Meião","Altura"],
-    ["Grama sintética","Textura"],
-    ["Rede do gol","Malha"],
-    ["Pênalti","Pressão"],
-    ["Drible","Desvio"],
-    ["Contra-ataque","Janela"],
-    ["Prorrogação","Resistência"],
-    ["Tiro de meta","Recomeço"],
-    ["Arremesso lateral","Margem"],
-    ["Barreira","Alinhamento"],
-    ["Cartão vermelho","Limite"],
-    ["Copa do Mundo","Intervalo"],
-    ["Libertadores","Viagem"],
-    ["Brasileirão","Calendário"],
-    ["VAR","Revisão"],
-    ["Bandeirinha","Borda"],
-    ["Apito","Sopro"],
+    ["Neymar", ["Arrancada", "Pedalada", "Camisa 10"]],
+    ["Pelé", ["Finalização", "Camisa 10", "Cabeceio"]],
+    ["Marta", ["Camisa 10", "Pé esquerdo", "Seleção"]],
+    ["Chuteira", ["Cravos", "Gramado", "Aderência"]],
+    ["Trave", ["Poste", "Batida seca", "Bola na madeira"]],
+    ["Escanteio", ["Segunda trave", "Cabeceio", "Bola parada"]],
+    ["Cartão amarelo", ["Advertência", "Reclamação", "Suspensão"]],
+    ["Maracanã", ["Arquibancada", "Final", "Rio de Janeiro"]],
+    ["Bola de futebol", ["Gomos", "Calibragem", "Gramado"]],
+    ["Luva de goleiro", ["Palma", "Aderência", "Defesa"]],
+    ["Impedimento", ["Linha defensiva", "Passe em profundidade", "Bandeira"]],
+    ["Cristiano Ronaldo", ["Cabeceio", "Camisa 7", "Finalização"]],
+    ["Lionel Messi", ["Canhota", "Camisa 10", "Bola colada no pé"]],
+    ["Ronaldo Fenômeno", ["Arrancada", "Centroavante", "Finalização"]],
+    ["Ronaldinho Gaúcho", ["Sorriso", "Passe sem olhar", "Elástico"]],
+    ["Vinícius Júnior", ["Ponta", "Aceleração", "Um contra um"]],
+    ["Zico", ["Falta", "Camisa 10", "Armação"]],
+    ["Romário", ["Área", "Toque curto", "Saída do goleiro"]],
+    ["Garrincha", ["Ponta", "Mudança de direção", "Um contra um"]],
+    ["Rivaldo", ["Canhota", "Voleio", "Meia-atacante"]],
+    ["Cafu", ["Apoio ao ataque", "Cruzamento", "Fôlego"]],
+    ["Roberto Carlos", ["Canhota", "Chute de longe", "Corrida pela ponta"]],
+    ["Kaká", ["Arrancada", "Passe em profundidade", "Meia-atacante"]],
+    ["Andrés Iniesta", ["Passe curto", "Posse de bola", "Meio-campo"]],
+    ["Luka Modrić", ["Passe de trivela", "Visão de jogo", "Meio-campo"]],
+    ["Kylian Mbappé", ["Arrancada", "Ponta", "Bola nas costas da defesa"]],
+    ["Erling Haaland", ["Área", "Finalização de primeira", "Força física"]],
+    ["Camisa de time", ["Escudo", "Patrocínio", "Uniforme"]],
+    ["Caneleira", ["Proteção", "Dividida", "Dentro da meia"]],
+    ["Meião", ["Até o joelho", "Uniforme", "Proteção"]],
+    ["Grama sintética", ["Chuteira", "Borracha", "Campo"]],
+    ["Rede do gol", ["Malha", "Travessão", "Bola balançando"]],
+    ["Pênalti", ["Marca no chão", "Cara a cara", "Cobrança"]],
+    ["Drible", ["Finta", "Mudança de direção", "Um contra um"]],
+    ["Contra-ataque", ["Arrancada", "Espaço livre", "Roubo de bola"]],
+    ["Prorrogação", ["Tempo extra", "Cãibra", "Empate"]],
+    ["Tiro de meta", ["Bola pela linha de fundo", "Saída de jogo", "Pequena área"]],
+    ["Arremesso lateral", ["Com as mãos", "Linha do campo", "Reposição"]],
+    ["Barreira", ["Falta", "Jogadores lado a lado", "Salto"]],
+    ["Cartão vermelho", ["Expulsão", "Entrada dura", "Um a menos"]],
+    ["Copa do Mundo", ["Seleções", "Fase de grupos", "Disputa por taça"]],
+    ["Libertadores", ["Viagem internacional", "Mata-mata", "Torcida visitante"]],
+    ["Brasileirão", ["Pontos corridos", "Tabela", "Rodada"]],
+    ["VAR", ["Revisão", "Cabine", "Checagem"]],
+    ["Bandeirinha", ["Linha do campo", "Impedimento", "Assistente"]],
+    ["Apito", ["Sopro", "Sinal sonoro", "Reinício"]],
   ],
   cinema: [
-    ["Titanic","Travessia"],
-    ["Matrix","Escolha"],
-    ["Shrek","Visita"],
-    ["Jurassic Park","Amostra"],
-    ["Interestelar","Distância"],
-    ["Oscar","Expectativa"],
-    ["Pipoca","Estalo"],
-    ["Claque","Batida"],
-    ["O Rei Leão","Legado"],
-    ["Procurando Nemo","Correnteza"],
-    ["Monstros S.A.","Turno"],
-    ["WALL-E","Rotina"],
-    ["Toy Story","Mudança"],
-    ["Up – Altas Aventuras","Promessa"],
-    ["Ratatouille","Memória"],
-    ["Divertida Mente","Mudança"],
-    ["Coco","Retrato"],
-    ["Encanto","Peso"],
-    ["Moana","Horizonte"],
-    ["Frozen","Isolamento"],
-    ["Harry Potter","Correspondência"],
-    ["O Senhor dos Anéis","Caminhada"],
-    ["De Volta para o Futuro","Atraso"],
-    ["Indiana Jones","Mapa"],
-    ["E.T. – O Extraterrestre","Contato"],
-    ["Os Caça-Fantasmas","Chamado"],
-    ["Gladiador","Honra"],
-    ["Rocky","Treino"],
-    ["O Poderoso Chefão","Família"],
-    ["Forrest Gump","Espera"],
-    ["O Show de Truman","Limite"],
-    ["O Náufrago","Paciência"],
-    ["O Diabo Veste Prada","Prazo"],
-    ["A Origem","Camadas"],
-    ["Duna","Disputa"],
-    ["Avatar","Conexão"],
-    ["Cidade de Deus","Escolha"],
-    ["Central do Brasil","Carta"],
-    ["Auto da Compadecida","Acordo"],
-    ["Tropa de Elite","Hierarquia"],
-    ["Bacurau","Visita"],
-    ["Ainda Estou Aqui","Ausência"],
-    ["Trilha sonora","Clima"],
-    ["Dublagem","Sincronia"],
-    ["Efeitos especiais","Ilusão"],
-    ["Trailer","Amostra"],
+    ["Titanic", ["Travessia", "Salão de baile", "Água gelada"]],
+    ["Matrix", ["Escolha", "Realidade simulada", "Câmera lenta"]],
+    ["Shrek", ["Pântano", "Castelo", "Conto de fadas"]],
+    ["Jurassic Park", ["Ilha", "Cerca elétrica", "Experimento"]],
+    ["Interestelar", ["Missão espacial", "Dilatação do tempo", "Planeta distante"]],
+    ["Oscar", ["Estatueta", "Discurso", "Tapete vermelho"]],
+    ["Pipoca", ["Milho", "Balde", "Estalo"]],
+    ["Claque", ["Tomada", "Batida", "Sincronia"]],
+    ["O Rei Leão", ["Reino", "Herança", "Savana"]],
+    ["Procurando Nemo", ["Recife", "Pai e filho", "Mar aberto"]],
+    ["Monstros S.A.", ["Turno da noite", "Porta", "Fábrica"]],
+    ["WALL-E", ["Sucata", "Planeta vazio", "Plantinha"]],
+    ["Toy Story", ["Infância", "Mudança de casa", "Quarto"]],
+    ["Up – Altas Aventuras", ["Viagem", "Promessa", "Casa"]],
+    ["Ratatouille", ["Receita", "Cozinha francesa", "Crítico"]],
+    ["Divertida Mente", ["Memória", "Mudança de cidade", "Infância"]],
+    ["Coco", ["Retrato", "Música de família", "Tradição"]],
+    ["Encanto", ["Casa de família", "Dons", "Pressão familiar"]],
+    ["Moana", ["Navegação", "Ilha", "Oceano"]],
+    ["Frozen", ["Irmãs", "Inverno", "Castelo"]],
+    ["Harry Potter", ["Internato", "Varinha", "Coruja"]],
+    ["O Senhor dos Anéis", ["Jornada", "Companhia", "Montanha"]],
+    ["De Volta para o Futuro", ["Carro", "Relógio", "Viagem no tempo"]],
+    ["Indiana Jones", ["Escavação", "Relíquia", "Armadilha"]],
+    ["E.T. – O Extraterrestre", ["Amizade", "Bicicleta", "Contato"]],
+    ["Os Caça-Fantasmas", ["Chamado", "Equipamento", "Assombração"]],
+    ["Gladiador", ["Arena", "Roma", "Vingança"]],
+    ["Rocky", ["Treino", "Ringue", "Escadaria"]],
+    ["O Poderoso Chefão", ["Família", "Lealdade", "Negócios"]],
+    ["Forrest Gump", ["Banco de praça", "Corrida", "Amizade"]],
+    ["O Show de Truman", ["Audiência", "Vizinhança", "Cenário"]],
+    ["O Náufrago", ["Ilha", "Sobrevivência", "Acidente aéreo"]],
+    ["O Diabo Veste Prada", ["Revista", "Assistente", "Passarela"]],
+    ["A Origem", ["Sonhos", "Missão em equipe", "Camadas"]],
+    ["Duna", ["Deserto", "Recurso valioso", "Disputa entre famílias"]],
+    ["Avatar", ["Floresta", "Conflito", "Outro planeta"]],
+    ["Cidade de Deus", ["Fotografia", "Bairro", "Violência"]],
+    ["Central do Brasil", ["Carta", "Viagem de ônibus", "Reencontro"]],
+    ["Auto da Compadecida", ["Sertão", "Esperteza", "Julgamento"]],
+    ["Tropa de Elite", ["Operação", "Treinamento", "Hierarquia"]],
+    ["Bacurau", ["Povoado", "Estranhos", "Resistência"]],
+    ["Ainda Estou Aqui", ["Ditadura", "Família", "Busca"]],
+    ["Trilha sonora", ["Música", "Instrumental", "Clima da cena"]],
+    ["Dublagem", ["Voz", "Idioma", "Sincronia"]],
+    ["Efeitos especiais", ["Maquiagem", "Computador", "Ilusão"]],
+    ["Trailer", ["Prévia", "Estreia", "Montagem"]],
   ],
   comida: [
-    ["Brigadeiro","Festa"],
-    ["Lasanha","Camadas"],
-    ["Tapioca","Peneira"],
-    ["Sushi","Precisão"],
-    ["Cuscuz","Vapor"],
-    ["Açaí","Frio"],
-    ["Pizza","Encontro"],
-    ["Pão de queijo","Intervalo"],
-    ["Feijoada","Sábado"],
-    ["Farofa","Crocância"],
-    ["Baião de dois","Mistura"],
-    ["Vatapá","Consistência"],
-    ["Arroz de cuxá","Acidez"],
-    ["Moqueca","Calor"],
-    ["Acarajé","Rua"],
-    ["Pastel","Feira"],
-    ["Coxinha","Pausa"],
-    ["Empada","Migalha"],
-    ["Esfiha","Dobra"],
-    ["Quibe","Tempero"],
-    ["Hambúrguer","Montagem"],
-    ["Cachorro-quente","Fila"],
-    ["Omelete","Virada"],
-    ["Panqueca","Volta"],
-    ["Risoto","Paciência"],
-    ["Strogonoff","Cobertura"],
-    ["Purê de batata","Maciez"],
-    ["Salada de frutas","Cores"],
-    ["Canjica","Tradição"],
-    ["Pamonha","Embrulho"],
-    ["Cocada","Textura"],
-    ["Paçoca","Pressão"],
-    ["Pudim","Vitrine"],
-    ["Mousse","Leveza"],
-    ["Bolo de cenoura","Cobertura"],
-    ["Churros","Passeio"],
-    ["Sorvete","Temperatura"],
-    ["Brownie","Densidade"],
-    ["Rapadura","Bloco"],
-    ["Goiabada","Dupla"],
-    ["Banana frita","Dourado"],
-    ["Macarrão","Fio"],
-    ["Nhoque","Formato"],
-    ["Churrasco","Brasa"],
-    ["Caldo verde","Noite"],
-    ["Pão francês","Manhã"],
+    ["Brigadeiro", ["Festa", "Chocolate", "Forminha"]],
+    ["Lasanha", ["Forno", "Camadas", "Queijo gratinado"]],
+    ["Tapioca", ["Frigideira", "Goma", "Recheio"]],
+    ["Sushi", ["Arroz", "Alga", "Shoyu"]],
+    ["Cuscuz", ["Vapor", "Flocos", "Manteiga"]],
+    ["Açaí", ["Frio", "Tigela", "Granola"]],
+    ["Pizza", ["Fatia", "Forno", "Massa aberta"]],
+    ["Pão de queijo", ["Polvilho", "Forno", "Café da manhã"]],
+    ["Feijoada", ["Caldo escuro", "Almoço em grupo", "Couve"]],
+    ["Farofa", ["Acompanhamento", "Crocância", "Torrada na panela"]],
+    ["Baião de dois", ["Feijão", "Comida nordestina", "Queijo coalho"]],
+    ["Vatapá", ["Cremoso", "Dendê", "Acompanhamento"]],
+    ["Arroz de cuxá", ["Comida maranhense", "Acidez", "Camarão seco"]],
+    ["Moqueca", ["Peixe", "Panela", "Leite de coco"]],
+    ["Acarajé", ["Dendê", "Tabuleiro", "Feijão-fradinho"]],
+    ["Pastel", ["Feira", "Massa crocante", "Fritura"]],
+    ["Coxinha", ["Frango desfiado", "Salgado de festa", "Empanado"]],
+    ["Empada", ["Massa que esfarela", "Forno", "Recheio"]],
+    ["Esfiha", ["Padaria", "Massa aberta", "Tempero"]],
+    ["Quibe", ["Trigo", "Hortelã", "Salgado"]],
+    ["Hambúrguer", ["Chapa", "Sanduíche", "Carne moldada"]],
+    ["Cachorro-quente", ["Pão macio", "Molho", "Comida de rua"]],
+    ["Omelete", ["Ovos", "Frigideira", "Dobrado"]],
+    ["Panqueca", ["Frigideira", "Enrolada", "Massa fina"]],
+    ["Risoto", ["Caldo", "Cremoso", "Mexer na panela"]],
+    ["Strogonoff", ["Creme", "Batata palha", "Molho"]],
+    ["Purê de batata", ["Cremoso", "Acompanhamento", "Amassado"]],
+    ["Salada de frutas", ["Cores", "Tigela", "Pedaços"]],
+    ["Canjica", ["Festa junina", "Leite", "Canela"]],
+    ["Pamonha", ["Embrulho", "Festa junina", "Vapor"]],
+    ["Cocada", ["Coco ralado", "Açúcar", "Tabuleiro"]],
+    ["Paçoca", ["Amendoim", "Esfarela", "Festa junina"]],
+    ["Pudim", ["Calda", "Banho-maria", "Geladeira"]],
+    ["Mousse", ["Aerado", "Geladeira", "Colherada"]],
+    ["Bolo de cenoura", ["Cobertura", "Fatia", "Massa alaranjada"]],
+    ["Churros", ["Canela", "Massa frita", "Parque"]],
+    ["Sorvete", ["Casquinha", "Frio", "Cremoso"]],
+    ["Brownie", ["Chocolate", "Quadrado", "Casquinha por cima"]],
+    ["Rapadura", ["Bloco", "Cana", "Doce firme"]],
+    ["Goiabada", ["Doce de corte", "Queijo", "Fruta cozida"]],
+    ["Banana frita", ["Dourado", "Frigideira", "Acompanhamento"]],
+    ["Macarrão", ["Molho", "Água fervente", "Garfada"]],
+    ["Nhoque", ["Massa de batata", "Molho", "Pedacinhos"]],
+    ["Churrasco", ["Brasa", "Espeto", "Domingo"]],
+    ["Caldo verde", ["Couve", "Tigela", "Noite fria"]],
+    ["Pão francês", ["Padaria", "Casca crocante", "Manteiga"]],
   ],
   animais: [
-    ["Polvo","Tinta"],
-    ["Girafa","Alcance"],
-    ["Tartaruga","Paciência"],
-    ["Morcego","Eco"],
-    ["Camaleão","Disfarce"],
-    ["Pinguim","Casaca"],
-    ["Ornitorrinco","Mistura"],
-    ["Abelha","Rotina"],
-    ["Capivara","Margem"],
-    ["Onça-pintada","Sombra"],
-    ["Lobo-guará","Horizonte"],
-    ["Tamanduá","Fresta"],
-    ["Bicho-preguiça","Intervalo"],
-    ["Tatu","Abrigo"],
-    ["Ouriço","Distância"],
-    ["Jacaré","Imobilidade"],
-    ["Crocodilo","Espera"],
-    ["Iguana","Calor"],
-    ["Sucuri","Silêncio"],
-    ["Cascavel","Alerta"],
-    ["Sapo","Mudança"],
-    ["Salamandra","Umidade"],
-    ["Tubarão","Percurso"],
-    ["Golfinho","Grupo"],
-    ["Baleia","Viagem"],
-    ["Arraia","Fundo"],
-    ["Cavalo-marinho","Corrente"],
-    ["Lula","Jato"],
-    ["Caranguejo","Desvio"],
-    ["Lagosta","Rocha"],
-    ["Ostra","Filtro"],
-    ["Água-viva","Transparência"],
-    ["Coruja","Vigília"],
-    ["Águia","Altura"],
-    ["Arara","Volume"],
-    ["Tucano","Contraste"],
-    ["Beija-flor","Pausa"],
-    ["Flamingo","Equilíbrio"],
-    ["Avestruz","Passada"],
-    ["Pavão","Desfile"],
-    ["Elefante","Vibração"],
-    ["Hipopótamo","Superfície"],
-    ["Rinoceronte","Território"],
-    ["Gorila","Postura"],
-    ["Canguru","Impulso"],
-    ["Coala","Descanso"],
+    ["Polvo", ["Ventosas", "Tinta", "Frestas"]],
+    ["Girafa", ["Pescoço", "Folhas altas", "Manchas"]],
+    ["Tartaruga", ["Casco", "Passo lento", "Ovos"]],
+    ["Morcego", ["Caverna", "Noite", "Eco"]],
+    ["Camaleão", ["Galho", "Disfarce", "Língua comprida"]],
+    ["Pinguim", ["Colônia", "Mergulho", "Caminhada engraçada"]],
+    ["Ornitorrinco", ["Bico", "Água doce", "Ovos"]],
+    ["Abelha", ["Colmeia", "Flores", "Enxame"]],
+    ["Capivara", ["Beira do rio", "Bando", "Roedor"]],
+    ["Onça-pintada", ["Manchas", "Mata fechada", "Caça de emboscada"]],
+    ["Lobo-guará", ["Cerrado", "Pernas longas", "Pelagem avermelhada"]],
+    ["Tamanduá", ["Focinho", "Cupinzeiro", "Garras"]],
+    ["Bicho-preguiça", ["Galho", "Devagar", "De cabeça para baixo"]],
+    ["Tatu", ["Toca", "Carapaça", "Escavação"]],
+    ["Ouriço", ["Espinhos", "Defesa", "Jardim"]],
+    ["Jacaré", ["Beira do rio", "Olhos fora d'água", "Emboscada"]],
+    ["Crocodilo", ["Mandíbula", "Margem", "Escamas"]],
+    ["Iguana", ["Galho", "Escamas", "Sol"]],
+    ["Sucuri", ["Rio", "Enroscar", "Emboscada"]],
+    ["Cascavel", ["Chocalho", "Veneno", "Mata seca"]],
+    ["Sapo", ["Brejo", "Pulo", "Canto noturno"]],
+    ["Salamandra", ["Pele úmida", "Pedras molhadas", "Corpo alongado"]],
+    ["Tubarão", ["Barbatana", "Predador", "Mar aberto"]],
+    ["Golfinho", ["Grupo", "Saltos", "Sons"]],
+    ["Baleia", ["Migração", "Superfície", "Tamanho"]],
+    ["Arraia", ["Fundo arenoso", "Formato achatado", "Cauda"]],
+    ["Cavalo-marinho", ["Cauda enrolada", "Recife", "Nado vertical"]],
+    ["Lula", ["Tentáculos", "Tinta", "Jato d'água"]],
+    ["Caranguejo", ["Pinças", "Mangue", "Andar de lado"]],
+    ["Lagosta", ["Antenas", "Fundo do mar", "Carapaça"]],
+    ["Ostra", ["Concha", "Filtro", "Rocha"]],
+    ["Água-viva", ["Transparência", "Ardência", "Flutua"]],
+    ["Coruja", ["Olhos grandes", "Noite", "Voo silencioso"]],
+    ["Águia", ["Garras", "Ninho alto", "Caça do alto"]],
+    ["Arara", ["Bando", "Grito", "Penas coloridas"]],
+    ["Tucano", ["Bico grande", "Frutas", "Copa da árvore"]],
+    ["Beija-flor", ["Néctar", "Voo parado", "Bico fino"]],
+    ["Flamingo", ["Água rasa", "Pernas compridas", "Bando"]],
+    ["Avestruz", ["Corrida", "Ave grande", "Ovo grande"]],
+    ["Pavão", ["Plumagem", "Cauda aberta", "Exibição"]],
+    ["Elefante", ["Manada", "Orelhas grandes", "Presas"]],
+    ["Hipopótamo", ["Rio", "Peso", "Passa o dia na água"]],
+    ["Rinoceronte", ["Chifre", "Pele grossa", "Savana"]],
+    ["Gorila", ["Primata", "Grupo familiar", "Floresta"]],
+    ["Canguru", ["Saltos", "Cauda forte", "Bolsa"]],
+    ["Coala", ["Galho", "Vida nas árvores", "Sono"]],
   ],
   games: [
-    ["Minecraft","Camadas"],
-    ["Tetris","Encaixe"],
-    ["Mario","Atalho"],
-    ["Sonic","Impulso"],
-    ["Pac-Man","Curva"],
-    ["Among Us","Circulação"],
-    ["Stardew Valley","Estação"],
-    ["Portal","Promessa"],
-    ["Counter-Strike","Economia"],
-    ["Valorant","Coordenação"],
-    ["Fortnite","Queda"],
-    ["Roblox","Criação"],
-    ["Free Fire","Encolhimento"],
-    ["League of Legends","Rota"],
-    ["Dota 2","Visão"],
-    ["Rocket League","Balanço"],
-    ["EA Sports FC","Escalação"],
-    ["The Sims","Rotina"],
-    ["GTA V","Trânsito"],
-    ["Red Dead Redemption 2","Fronteira"],
-    ["Elden Ring","Paciência"],
-    ["Dark Souls","Insistência"],
-    ["Hollow Knight","Eco"],
-    ["Celeste","Altura"],
-    ["Terraria","Escavação"],
-    ["Cuphead","Repetição"],
-    ["Hades","Retorno"],
-    ["Dead Cells","Ciclo"],
-    ["Undertale","Escolha"],
-    ["Fall Guys","Equilíbrio"],
-    ["It Takes Two","Dupla"],
-    ["Overcooked","Prazo"],
-    ["Resident Evil","Inventário"],
-    ["Silent Hill","Visibilidade"],
-    ["God of War","Herança"],
-    ["The Last of Us","Travessia"],
-    ["Uncharted","Rastro"],
-    ["Tomb Raider","Escalada"],
-    ["Life Is Strange","Consequência"],
-    ["Detroit: Become Human","Decisão"],
-    ["Street Fighter","Distância"],
-    ["Mortal Kombat","Sequência"],
-    ["Tekken","Postura"],
-    ["Pokémon","Troca"],
-    ["Animal Crossing","Vizinhança"],
-    ["Super Smash Bros.","Margem"],
+    ["Minecraft", ["Blocos", "Picareta", "Construção livre"]],
+    ["Tetris", ["Peças caindo", "Encaixe", "Fileira"]],
+    ["Mario", ["Plataformas", "Pulo", "Cano"]],
+    ["Sonic", ["Impulso", "Anéis", "Corrida"]],
+    ["Pac-Man", ["Labirinto", "Perseguição", "Pontinhos"]],
+    ["Among Us", ["Tarefas", "Reunião", "Tripulação"]],
+    ["Stardew Valley", ["Fazenda", "Estações", "Vila"]],
+    ["Portal", ["Laboratório", "Quebra-cabeça", "Passagem entre salas"]],
+    ["Counter-Strike", ["Economia", "Rodadas", "Desarme"]],
+    ["Valorant", ["Habilidades", "Rodadas", "Mira"]],
+    ["Fortnite", ["Construção", "Queda do céu", "Zona fechando"]],
+    ["Roblox", ["Minijogos", "Criação", "Avatares"]],
+    ["Free Fire", ["Pouso", "Celular", "Zona segura"]],
+    ["League of Legends", ["Torres", "Rotas", "Campeões"]],
+    ["Dota 2", ["Rotas", "Visão do mapa", "Heróis"]],
+    ["Rocket League", ["Impulso", "Arena", "Gol"]],
+    ["EA Sports FC", ["Escalação", "Estádio", "Modo carreira"]],
+    ["The Sims", ["Casa", "Rotina", "Vizinhança"]],
+    ["GTA V", ["Trânsito", "Assalto", "Mundo aberto"]],
+    ["Red Dead Redemption 2", ["Fronteira", "Cavalo", "Bando"]],
+    ["Elden Ring", ["Mundo aberto", "Chefes", "Montaria"]],
+    ["Dark Souls", ["Fogueira", "Esquiva", "Perder o progresso"]],
+    ["Hollow Knight", ["Mapa subterrâneo", "Insetos", "Exploração"]],
+    ["Celeste", ["Escalada", "Plataforma", "Arrancada no ar"]],
+    ["Terraria", ["Escavação", "Construção", "Mundo em duas dimensões"]],
+    ["Cuphead", ["Desenho antigo", "Chefes", "Repetição"]],
+    ["Hades", ["Submundo", "Tentativas", "Mitologia"]],
+    ["Dead Cells", ["Tentativas", "Armas diferentes", "Prisão"]],
+    ["Undertale", ["Escolhas", "Monstros", "Poupar inimigos"]],
+    ["Fall Guys", ["Obstáculos", "Eliminação", "Corrida em grupo"]],
+    ["It Takes Two", ["Cooperação", "Dupla", "Brinquedos"]],
+    ["Overcooked", ["Pedidos", "Cronômetro", "Trabalho em equipe"]],
+    ["Resident Evil", ["Inventário", "Munição", "Sobrevivência"]],
+    ["Silent Hill", ["Neblina", "Rádio", "Cidade vazia"]],
+    ["God of War", ["Mitologia", "Pai e filho", "Machado"]],
+    ["The Last of Us", ["Viagem em dupla", "Infecção", "Recursos escassos"]],
+    ["Uncharted", ["Relíquias", "Escalada", "Caça ao tesouro"]],
+    ["Tomb Raider", ["Ruínas", "Armadilhas", "Escavação"]],
+    ["Life Is Strange", ["Fotografia", "Escolhas", "Voltar no tempo"]],
+    ["Detroit: Become Human", ["Androides", "Escolhas", "Investigação"]],
+    ["Street Fighter", ["Fliperama", "Combo", "Luta em dois planos"]],
+    ["Mortal Kombat", ["Golpe final", "Torneio", "Violência gráfica"]],
+    ["Tekken", ["Esquiva lateral", "Combo", "Fliperama"]],
+    ["Pokémon", ["Coleção", "Troca", "Batalha por turnos"]],
+    ["Animal Crossing", ["Vizinhança", "Pesca", "Decoração"]],
+    ["Super Smash Bros.", ["Plataformas", "Arena", "Jogar para fora"]],
   ],
   objetos: [
-    ["Guarda-chuva","Previsão"],
-    ["Escova de dentes","Rotina"],
-    ["Espelho","Ângulo"],
-    ["Controle remoto","Alcance"],
-    ["Chave","Encaixe"],
-    ["Carteira","Bolso"],
-    ["Mochila","Costas"],
-    ["Óculos","Ajuste"],
-    ["Garrafa térmica","Intervalo"],
-    ["Relógio de pulso","Compromisso"],
-    ["Fone de ouvido","Isolamento"],
-    ["Carregador","Espera"],
-    ["Extensão elétrica","Distância"],
-    ["Lanterna","Visibilidade"],
-    ["Pilhas","Reserva"],
-    ["Abajur","Clima"],
-    ["Ventilador","Circulação"],
-    ["Cortina","Filtro"],
-    ["Varal","Sol"],
-    ["Prendedor de roupa","Pressão"],
-    ["Cabide","Forma"],
-    ["Ferro de passar","Vinco"],
-    ["Cesto de roupa","Acúmulo"],
-    ["Saboneteira","Drenagem"],
-    ["Toalha","Absorção"],
-    ["Pente","Alinhamento"],
-    ["Secador de cabelo","Fluxo"],
-    ["Cortador de unhas","Precisão"],
-    ["Rodo","Direção"],
-    ["Vassoura","Canto"],
-    ["Pá de lixo","Recolhimento"],
-    ["Balde","Volume"],
-    ["Esponja","Atrito"],
-    ["Pano de prato","Manuseio"],
-    ["Luva de limpeza","Contato"],
-    ["Tapete","Textura"],
-    ["Capacho","Entrada"],
-    ["Travesseiro","Altura"],
-    ["Lençol","Camada"],
-    ["Cobertor","Peso"],
-    ["Colchão","Apoio"],
-    ["Caixa de ferramentas","Organização"],
-    ["Fita métrica","Margem"],
-    ["Chave de fenda","Giro"],
-    ["Alicate","Aperto"],
-    ["Martelo","Impulso"],
-    ["Parafuso","Fixação"],
-    ["Tesoura","Simetria"],
-    ["Cola bastão","Área"],
-    ["Grampeador","Junção"],
-    ["Clipes","Agrupamento"],
-    ["Elástico","Tensão"],
-    ["Caneta","Traço"],
-    ["Lápis","Pressão"],
-    ["Borracha","Revisão"],
-    ["Marca-texto","Trecho"],
-    ["Caderno","Sequência"],
-    ["Régua","Alinhamento"],
-    ["Envelope","Destino"],
-    ["Carimbo","Confirmação"],
-    ["Calculadora","Conferência"],
-    ["Caneca","Pausa"],
-    ["Copo","Margem"],
-    ["Prato","Porção"],
-    ["Garfo","Apoio"],
-    ["Colher","Medida"],
-    ["Faca de cozinha","Firmeza"],
-    ["Tábua de corte","Superfície"],
-    ["Escorredor de louça","Secagem"],
-    ["Peneira","Separação"],
-    ["Ralador","Textura"],
-    ["Concha","Porção"],
-    ["Pegador de massa","Controle"],
-    ["Abridor de latas","Borda"],
-    ["Saca-rolhas","Resistência"],
-    ["Panela de pressão","Tempo"],
-    ["Frigideira","Virada"],
-    ["Chaleira","Espera"],
-    ["Liquidificador","Redemoinho"],
-    ["Torradeira","Ponto"],
-    ["Pote plástico","Vedação"],
-    ["Forma de gelo","Divisão"],
-    ["Funil","Passagem"],
-    ["Garrafa reutilizável","Trajeto"],
-    ["Sacola retornável","Compra"],
-    ["Caixa de fósforos","Atrito"],
-    ["Vela","Duração"],
-    ["Isqueiro","Faísca"],
-    ["Porta-retrato","Memória"],
-    ["Despertador","Pontualidade"],
-    ["Cadeado","Segurança"],
-    ["Campainha","Chegada"],
-    ["Cadeira","Postura"],
-    ["Banquinho","Altura"],
-    ["Cabideiro","Chegada"],
-    ["Estante","Ordem"],
-    ["Gaveta","Acesso"],
-    ["Lixeira","Descarte"],
-    ["Porta-copos","Umidade"],
-    ["Guardanapo","Acidente"],
-    ["Filtro de café","Passagem"],
-    ["Coador de chá","Infusão"],
+    ["Guarda-chuva", ["Temporal", "Dobrável", "Cabo"]],
+    ["Escova de dentes", ["Banheiro", "Cerdas", "Pasta"]],
+    ["Espelho", ["Reflexo", "Moldura", "Banheiro"]],
+    ["Controle remoto", ["Botões", "Sofá", "Pilhas"]],
+    ["Chave", ["Metal", "Fechadura", "Argola"]],
+    ["Carteira", ["Bolso", "Documento", "Dobrável"]],
+    ["Mochila", ["Alça", "Zíper", "Compartimento"]],
+    ["Óculos", ["Armação", "Ajuste no nariz", "Estojo"]],
+    ["Garrafa térmica", ["Temperatura", "Tampa", "Café"]],
+    ["Relógio de pulso", ["Mostrador", "Ponteiro", "Ajuste"]],
+    ["Fone de ouvido", ["Áudio", "Bluetooth", "Almofada"]],
+    ["Carregador", ["Bateria", "Cabo", "Tomada"]],
+    ["Extensão elétrica", ["Tomadas", "Cabo comprido", "Alcance"]],
+    ["Lanterna", ["Pilha", "Feixe", "Apagão"]],
+    ["Pilhas", ["Energia", "Polos", "Compartimento"]],
+    ["Abajur", ["Mesa de cabeceira", "Luz suave", "Interruptor"]],
+    ["Ventilador", ["Hélice", "Velocidade", "Brisa"]],
+    ["Cortina", ["Janela", "Privacidade", "Tecido"]],
+    ["Varal", ["Sol", "Estender", "Lavanderia"]],
+    ["Prendedor de roupa", ["Mola", "Tecido", "Lavanderia"]],
+    ["Cabide", ["Armário", "Gancho", "Ombros"]],
+    ["Ferro de passar", ["Vapor", "Tábua", "Tecido"]],
+    ["Cesto de roupa", ["Lavanderia", "Alças", "Cheio até a borda"]],
+    ["Saboneteira", ["Pia", "Espuma", "Molhado"]],
+    ["Toalha", ["Banho", "Tecido", "Secagem"]],
+    ["Pente", ["Cabelo", "Dentes espaçados", "Bolsa"]],
+    ["Secador de cabelo", ["Ar quente", "Penteado", "Tomada"]],
+    ["Cortador de unhas", ["Alavanca", "Metal", "Acabamento"]],
+    ["Rodo", ["Piso molhado", "Cabo comprido", "Borracha"]],
+    ["Vassoura", ["Cerdas", "Chão", "Poeira"]],
+    ["Pá de lixo", ["Cabo", "Montinho de sujeira", "Chão"]],
+    ["Balde", ["Alça", "Encher", "Limpeza"]],
+    ["Esponja", ["Espuma", "Duas faces", "Detergente"]],
+    ["Pano de prato", ["Cozinha", "Secagem", "Pendurado no fogão"]],
+    ["Luva de limpeza", ["Detergente", "Proteção", "Borracha"]],
+    ["Tapete", ["Piso", "Poeira", "Tecido"]],
+    ["Capacho", ["Entrada", "Sola", "Sujeira"]],
+    ["Travesseiro", ["Cabeceira", "Enchimento", "Apoio"]],
+    ["Lençol", ["Cama", "Elástico nas pontas", "Tecido fino"]],
+    ["Cobertor", ["Frio", "Cama", "Camada grossa"]],
+    ["Colchão", ["Espuma", "Cama", "Firmeza"]],
+    ["Caixa de ferramentas", ["Oficina", "Alça", "Compartimentos"]],
+    ["Fita métrica", ["Enrola", "Marcações", "Centímetros"]],
+    ["Chave de fenda", ["Ponta metálica", "Encaixe", "Giro"]],
+    ["Alicate", ["Aperto", "Mandíbula", "Cabo duplo"]],
+    ["Martelo", ["Batida", "Cabo", "Prego"]],
+    ["Parafuso", ["Rosca", "Giro", "Fixação"]],
+    ["Tesoura", ["Lâminas", "Papel", "Alças"]],
+    ["Cola bastão", ["Papel", "Aderência", "Tubo"]],
+    ["Grampeador", ["Pressão", "Folhas juntas", "Metal"]],
+    ["Clipes", ["Folhas", "Dobrado", "Metal"]],
+    ["Elástico", ["Estica", "Prender", "Borracha"]],
+    ["Caneta", ["Tinta", "Tampa", "Assinatura"]],
+    ["Lápis", ["Grafite", "Madeira", "Traço"]],
+    ["Borracha", ["Migalhas", "Grafite", "Correção"]],
+    ["Marca-texto", ["Cor forte", "Estudo", "Trecho"]],
+    ["Caderno", ["Folhas", "Anotações", "Espiral"]],
+    ["Régua", ["Centímetros", "Linha reta", "Estojo"]],
+    ["Envelope", ["Correio", "Papel dobrado", "Remetente"]],
+    ["Carimbo", ["Tinta", "Data", "Marca no papel"]],
+    ["Calculadora", ["Visor", "Teclas", "Conta"]],
+    ["Caneca", ["Alça", "Bebida quente", "Cerâmica"]],
+    ["Copo", ["Gole", "Borda", "Descartável"]],
+    ["Prato", ["Mesa", "Porção", "Louça"]],
+    ["Garfo", ["Dentes", "Talher", "Espetar"]],
+    ["Colher", ["Porção", "Sopa", "Talher"]],
+    ["Faca de cozinha", ["Lâmina", "Cabo", "Fatiar"]],
+    ["Tábua de corte", ["Bancada", "Madeira", "Fatiar"]],
+    ["Escorredor de louça", ["Pia", "Pratos em pé", "Grade"]],
+    ["Peneira", ["Malha", "Grãos", "Separar"]],
+    ["Ralador", ["Lâmina", "Queijo", "Aparas"]],
+    ["Concha", ["Sopa", "Porção", "Cabo comprido"]],
+    ["Pegador de massa", ["Garras", "Servir", "Macarrão"]],
+    ["Abridor de latas", ["Borda", "Tampa metálica", "Giro"]],
+    ["Saca-rolhas", ["Espiral", "Garrafa", "Movimento de puxar"]],
+    ["Panela de pressão", ["Vapor", "Pino", "Feijão"]],
+    ["Frigideira", ["Fogão", "Cabo", "Dourar"]],
+    ["Chaleira", ["Água quente", "Bico", "Fogão"]],
+    ["Liquidificador", ["Lâmina", "Motor", "Vitamina"]],
+    ["Torradeira", ["Fatia", "Crocância", "Alavanca"]],
+    ["Pote plástico", ["Marmita", "Tampa", "Geladeira"]],
+    ["Forma de gelo", ["Congelador", "Divisórias", "Cubos"]],
+    ["Funil", ["Boca estreita", "Transferência", "Encaixe"]],
+    ["Garrafa reutilizável", ["Apertar a tampa", "Academia", "Encher"]],
+    ["Sacola retornável", ["Mercado", "Alças", "Dobrável"]],
+    ["Caixa de fósforos", ["Risco", "Faísca", "Madeira"]],
+    ["Vela", ["Pavio", "Chama", "Cera"]],
+    ["Isqueiro", ["Chama", "Combustível", "De bolso"]],
+    ["Porta-retrato", ["Foto", "Moldura", "Prateleira"]],
+    ["Despertador", ["Alarme", "Manhã", "Mesa de cabeceira"]],
+    ["Cadeado", ["Aro", "Portão", "Combinação"]],
+    ["Campainha", ["Toque", "Visita", "Entrada"]],
+    ["Cadeira", ["Encosto", "Mesa", "Assento"]],
+    ["Banquinho", ["Baixo", "Assento", "Alcançar o alto"]],
+    ["Cabideiro", ["Gancho", "Entrada", "Pendurar"]],
+    ["Estante", ["Prateleiras", "Livros", "Parede"]],
+    ["Gaveta", ["Puxador", "Móvel", "Trilho"]],
+    ["Lixeira", ["Saco", "Pedal", "Descarte"]],
+    ["Porta-copos", ["Marca de água", "Mesa", "Base"]],
+    ["Guardanapo", ["Papel", "Refeição", "Dobrado"]],
+    ["Filtro de café", ["Papel", "Água quente", "Pó"]],
+    ["Coador de chá", ["Folhas", "Água quente", "Infusão"]],
   ],
 };
 const aliases = new Map([
@@ -474,16 +956,34 @@ const queries = {
   animais: ["mamífero animal", "ave animal", "animal marinho molusco"],
   games: ["jogo eletrônico plataforma", "jogo eletrônico quebra-cabeça", "jogo eletrônico aventura"],
 };
-const clues = [
-  [/futebolista|jogador|atacante|zagueiro|goleiro/i,"Torcida"],
-  [/estádio|arena/i,"Arquibancada"],[/chuteira|calçado/i,"Tração"],
-  [/árbitro|arbitragem|regra/i,"Apito"],[/trenador|treinador|técnico de futebol/i,"Prancheta"],
-  [/sobremesa|doce|bolo/i,"Fim da refeição"],[/culinária|ingrediente|prato|receita/i,"Mesa"],
-  [/mamífero|roedor/i,"Filhote"],[/ave|pássaro/i,"Ninho"],[/peixe|molusco|marinho/i,"Correnteza"],
-  [/filme|cinema|metragem/i,"Sessão"],[/jogo eletrônico|videojogo|videogame/i,"Controle"],
-  [/planeta|estrela|galáxia|astronom/i,"Observatório"],[/instrumento musical|música/i,"Compasso"],
-  [/cidade|município|capital/i,"Mapa"],[/personagem|protagonista/i,"História"],
-  [/equipamento|ferramenta|dispositivo/i,"Manuseio"],[/conceito|teoria|fenômeno/i,"Explicação"]
+const onlineHintRules = [
+  [/^(?:ex[- ])?(?:futebolista|jogador de futebol)\b.*\b(?:lateral|ala)\b/i, ["Apoio ao ataque", "Cruzamento", "Marcação"]],
+  [/^(?:ex[- ])?(?:futebolista|jogador de futebol)\b.*\b(?:ponta|extremo)\b/i, ["Arrancada", "Um contra um", "Corte para dentro"]],
+  [/^(?:ex[- ])?(?:futebolista|jogador de futebol)\b.*\b(?:atacante|centroavante)\b/i, ["Finalização", "Presença na área", "Passe em profundidade"]],
+  [/^(?:ex[- ])?(?:futebolista|jogador de futebol)\b.*\bgoleiro\b/i, ["Reflexo", "Saída do gol", "Defesa no canto"]],
+  [/^(?:ex[- ])?(?:futebolista|jogador de futebol)\b.*\b(?:zagueiro|defensor)\b/i, ["Bola aérea", "Marcação", "Corte"]],
+  [/^(?:ex[- ])?(?:futebolista|jogador de futebol)\b.*\b(?:meia|meio-campista|volante|médio)\b/i, ["Posse de bola", "Passe curto", "Visão de jogo"]],
+  [/^estádio\b.*\bfutebol\b/i, ["Arquibancada", "Gramado", "Torcida visitante"]],
+  [/^(?:filme|longa-metragem)\b.*\bterror\b/i, ["Suspense", "Susto", "Ameaça"]],
+  [/^(?:filme|longa-metragem)\b.*\banimação\b/i, ["Vozes", "Expressões desenhadas", "Movimento quadro a quadro"]],
+  [/^(?:filme|longa-metragem)\b.*\b(?:musical|música e dança)\b/i, ["Coreografia", "Números cantados", "Ensaio"]],
+  [/^(?:filme|longa-metragem)\b.*\bfaroeste\b/i, ["Fronteira", "Poeira", "Duelo"]],
+  [/^(?:jogo|videojogo|videogame)\b.*\b(?:de|do gênero) plataforma(?:s)?\b/i, ["Saltos", "Obstáculos", "Fases"]],
+  [/^(?:jogo|videojogo|videogame)\b.*\b(?:quebra-cabeça|puzzle)\b/i, ["Raciocínio", "Padrão", "Tentativa e erro"]],
+  [/^(?:jogo|videojogo|videogame)\b.*\b(?:tiro em primeira pessoa|FPS)\b/i, ["Mira", "Recarregar", "Campo de visão"]],
+  [/^(?:jogo|videojogo|videogame)\b.*\b(?:corrida|automobilismo)\b/i, ["Curva", "Volta rápida", "Ultrapassagem"]],
+  [/^(?:doce|sobremesa|bolo)\b.*\bchocolate\b/i, ["Cacau", "Derretido", "Sabor intenso"]],
+  [/^(?:prato|receita|preparação)\b.*\b(?:frito|frita|fritura)\b/i, ["Óleo quente", "Crocância", "Dourado"]],
+  [/^(?:prato|receita|preparação)\b.*\b(?:assado|assada|forno)\b/i, ["Assadeira", "Dourado", "Calor por igual"]],
+  [/^(?:ave|espécie de ave)\b.*\b(?:rapina|predadora)\b/i, ["Garras", "Caça do alto", "Voo planado"]],
+  [/^(?:ave|espécie de ave)\b.*\b(?:aquática|marinha|pescadora)\b/i, ["Água", "Penas", "Peixe"]],
+  [/^(?:mamífero|espécie de mamífero)\b.*\b(?:marinho|cetáceo)\b/i, ["Respirar na superfície", "Migração", "Nado"]],
+  [/^(?:mamífero|espécie de mamífero)\b.*\b(?:roedor|roedores)\b/i, ["Dentes da frente", "Mastigar", "Pelos"]],
+  [/^(?:peixe|espécie de peixe)\b.*\b(?:cartilaginoso|cartilagíneo)\b/i, ["Cartilagem", "Brânquias", "Barbatanas"]],
+  [/^instrumento musical\b.*\b(?:de corda|de cordas)\b/i, ["Afinação", "Vibração", "Notas"]],
+  [/^instrumento musical\b.*\b(?:de sopro|de vento)\b/i, ["Sopro", "Bocal", "Controle do ar"]],
+  [/^(?:cidade|município)\b.*\b(?:litorânea|litorâneo|costeira|costeiro)\b/i, ["Orla", "Brisa do mar", "Faixa de areia"]],
+  [/^(?:planeta|exoplaneta)\b.*\b(?:gasoso|gasosa)\b/i, ["Atmosfera espessa", "Nuvens", "Órbita"]],
 ];
 const $ = id => document.getElementById(id);
 const normalize = text => text.normalize("NFD").replace(/\p{Diacritic}/gu,"").toLowerCase().trim();
@@ -539,6 +1039,32 @@ function safeClue(title, hint) {
   ));
 }
 
+function hintsFromSnippet(title, snippet) {
+  const plainText = String(snippet ?? "").replace(/<[^>]*>/g, "");
+  const definition = plainText.match(/^[^.!?]{0,130}?(?:^|\s)(?:é|foi) (?:um|uma) ([^.!?]{1,160})/i)?.[1];
+  if (!definition) return [];
+
+  for (const [pattern, hints] of onlineHintRules) {
+    if (!pattern.test(definition)) continue;
+    const options = hints.filter(hint => safeClue(title, hint));
+    if (options.length >= 2) return options;
+  }
+  return [];
+}
+
+function assignHints(options, roles) {
+  const hints = sample([...options], options.length);
+  // Em grupos maiores, combine as pistas da própria carta para manter a variedade.
+  for (let index = 0; hints.length < roles.size; index++) {
+    const previous = hints[index];
+    const last = previous.split(" · ").at(-1);
+    for (const option of options) {
+      if (option !== last) hints.push(previous + " · " + option);
+    }
+  }
+  return new Map([...roles].map((player, index) => [player, hints[index]]));
+}
+
 function refreshHistory() {
   try {
     const saved = JSON.parse(localStorage.getItem(historyKey) ?? "[]");
@@ -592,9 +1118,8 @@ async function onlineCards(query, theme, key) {
         if (!title || title.length > 56 || /^(lista|anexo|categoria|história|cronologia)\b/i.test(title) || /desambiguação/i.test(row.title)) continue;
         const id = wordKey(title);
         if (!id || usedTerms.has(id) || entry.cards.has(id)) continue;
-        const snippet = String(row.snippet ?? "").replace(/<[^>]*>/g," ");
-        const hint = clues.find(([pattern, clue]) => pattern.test(snippet) && safeClue(title, clue))?.[1];
-        if (safeClue(title,hint)) entry.cards.set(id,[title,hint]);
+        const hints = hintsFromSnippet(title, row.snippet);
+        if (hints.length) entry.cards.set(id, [title, hints]);
       }
       if (available().length) break;
     }
@@ -610,31 +1135,22 @@ async function pickWord(theme) {
   refreshHistory();
   const key = keyOf(theme);
   const builtIn = has(local,key) ? local[key] : [];
-  let candidates = builtIn.filter(([word,hint]) => !usedTerms.has(wordKey(word)) && safeClue(word,hint));
-  if (key !== "objetos" && (!candidates.length || randomBelow(4) === 0)) {
-    const categories = has(queries,key) ? queries[key] : [theme];
-    const selectedQueries = candidates.length
-      ? [categories[randomBelow(categories.length)]]
-      : categories;
-    const results = await Promise.all(selectedQueries.map(query => onlineCards(query,theme,key)));
-    const online = new Map(results.flat().map(card => [wordKey(card[0]),card]));
+  let candidates = builtIn.filter(([word]) => !usedTerms.has(wordKey(word)));
+  if (!candidates.length && key !== "objetos") {
+    const categories = has(queries, key) ? queries[key] : [theme];
+    const results = await Promise.all(categories.map(query => onlineCards(query, theme, key)));
     refreshHistory();
-    if (online.size) {
-      const curated = new Map(builtIn.map(card => [wordKey(card[0]),card]));
-      const fresh = [...online].map(([id,card]) => curated.get(id) ?? card)
-        .filter(([word,hint]) => !usedTerms.has(wordKey(word)) && safeClue(word,hint));
-      if (fresh.length) candidates = fresh;
-    }
-    candidates = candidates.filter(([word]) => !usedTerms.has(wordKey(word)));
+    const online = new Map(results.flat().map(card => [wordKey(card[0]), card]));
+    candidates = [...online].filter(([id]) => !usedTerms.has(id)).map(([, card]) => card);
   }
   if (!candidates.length) {
     throw new Error(key === "objetos"
       ? "Todas as cartas de Objetos já foram usadas. Escolha outro tema."
       : "Nenhuma palavra inédita com pista foi encontrada. Tente buscar de novo ou escolha outro tema.");
   }
-  const [word,hint] = candidates[randomBelow(candidates.length)];
+  const [word,hints] = candidates[randomBelow(candidates.length)];
   rememberWord(word);
-  return {word,hint};
+  return {word,hints};
 }
 
 function renderPlayers() {
@@ -700,9 +1216,11 @@ async function startRound() {
   const roster = [...players];
   renderPlayers();
   try {
-    const word = await pickWord(theme);
+    const {word, hints: options} = await pickWord(theme);
     const roles = drawSpies(roster,impostors);
-    round = {...word, players:roster, roles, index:0};
+    const hints = assignHints(options, roles);
+    const starter = randomBelow(roster.length);
+    round = {word, players:roster, roles, hints, starter, index:0};
     previousSpies = new Set([...roles].map(index => normalize(roster[index])));
     showTurn();
   } catch (error) {
@@ -743,7 +1261,15 @@ $("themes").onclick = event => {
 };
 $("theme").oninput = syncThemes;
 $("start").onclick = $("again").onclick = startRound;
-$("edit").onclick = () => { show("setup"); $("theme").focus(); };
+function returnToMenu() {
+  hideCard();
+  cardSeen = false;
+  round = null;
+  $("starter").textContent = $("answer").textContent = $("spies").textContent = "";
+  show("setup");
+  $("theme").focus();
+}
+$("edit").onclick = $("menu-turn").onclick = $("menu-discussion").onclick = returnToMenu;
 
 function hideCard() {
   const pointer = activePointer;
@@ -753,15 +1279,23 @@ function hideCard() {
   $("cover").hidden = false;
   $("face").hidden = true;
   $("role").textContent = $("secret").textContent = $("hint").textContent = "";
+  $("partners").textContent = "";
   card.className = "card";
   $("next").disabled = !cardSeen;
 }
 
 function revealCard() {
+  if (!round || $("turn").hidden) return;
   const isSpy = round.roles.has(round.index);
   $("role").textContent = isSpy ? "Seu papel" : "Palavra secreta";
   $("secret").textContent = isSpy ? "Você é o impostor" : round.word;
-  $("hint").textContent = isSpy ? "Sua pista: " + round.hint : "";
+  $("hint").textContent = isSpy ? "Sua pista: " + round.hints.get(round.index) : "";
+  const partners = isSpy ? [...round.roles]
+    .filter(index => index !== round.index)
+    .map(index => round.players[index]) : [];
+  $("partners").textContent = partners.length
+    ? (partners.length === 1 ? "Seu parceiro impostor: " : "Seus parceiros impostores: ") + partners.join(", ")
+    : "";
   $("hold").classList.add("revealed");
   $("hold").classList.toggle("spy",isSpy);
   $("cover").hidden = $("next").disabled = true;
@@ -800,11 +1334,12 @@ document.addEventListener("visibilitychange", () => {
   if (document.hidden) hideCard();
 });
 $("next").onclick = () => {
-  if (!cardSeen || !$("face").hidden) return;
+  if (!round || !cardSeen || !$("face").hidden) return;
   hideCard();
   round.index++;
   if (round.index < round.players.length) showTurn();
   else {
+    $("starter").textContent = round.players[round.starter] + " começa dando a primeira pista.";
     show("discussion");
     $("discussion-title").focus();
   }
